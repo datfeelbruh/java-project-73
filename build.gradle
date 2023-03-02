@@ -2,6 +2,8 @@ plugins {
 	id 'application'
 	id 'checkstyle'
 	id 'java'
+	id 'com.adarshr.test-logger' version '2.1.1'
+	id 'jacoco'
 	id 'org.springframework.boot' version '3.0.3'
 	id 'io.spring.dependency-management' version '1.1.0'
 }
@@ -23,9 +25,31 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+test {
+	useJUnitPlatform()
+}
+
+testlogger {
+	showStandardStreams true
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		xml.required = true
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.8"
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+checkstyle {
+	toolVersion "10.0"
 }
 
 task stage(dependsOn: [clean, installDist])
