@@ -5,4 +5,4 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/db04d449e857b08796d4/test_coverage)](https://codeclimate.com/github/datfeelbruh/java-project-73/test_coverage)
 
-https://project-5-g1sl.onrender.com
+https://project-5-g1sl.onrender.com/welcome
