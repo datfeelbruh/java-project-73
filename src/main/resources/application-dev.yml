@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    username: ""
+    password: ""
+    url: "jdbc:h2./taskManagerDev"
+
+  jpa:
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /retard
+      settings:
+        web-allow-others: true
+
+logging:
+  level:
+    root: INFO
+    web: DEBUG
