@@ -4,9 +4,11 @@ server:
 
 spring:
     datasource:
+      platform: postgres
       username: ${USERNAME}
       password: ${PASSWORD}
       url: jdbc:postgres://${HOST}:${PORT}/${DB_NAME}
+      driverClassName: org.postgresql.Driver
 
     jpa:
       show-sql: false
