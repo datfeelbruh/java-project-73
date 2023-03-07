@@ -3,10 +3,10 @@ server:
     include-stacktrace: never
 
 spring:
-  datasource:
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
-    url: ${JDBC_DATABASE_URL}
+    datasource:
+      username: ${USERNAME}
+      password: ${PASSWORD}
+      url: jdbc:postgres://${HOST}:${PORT}/${DB_NAME}
 
     jpa:
       show-sql: false
