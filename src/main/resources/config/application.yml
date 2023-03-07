@@ -6,11 +6,10 @@ base-url: /api
 spring:
   application:
     name: project-5
+  profiles:
+    active: dev
+
 
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.xml
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
