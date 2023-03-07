@@ -16,7 +16,8 @@ import static hexlet.code.config.SpringConfigForIT.TEST_PROFILE;
 @EnableAspectJAutoProxy
 @ComponentScan(basePackages = "hexlet.code")
 @PropertySource(value = "classpath:/config/application.yml")
-public final class SpringConfigForIT {
+//CHECKSTYLE:OFF
+public class SpringConfigForIT {
     public static final String TEST_PROFILE = "test";
 
     @Bean
@@ -24,3 +25,4 @@ public final class SpringConfigForIT {
         return new RestTemplateBuilder().build();
     }
 }
+//CHECKSTYLE:ON
