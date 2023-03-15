@@ -12,16 +12,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build with Gradle
+        spring:
+          security:
+            jwt:
+              secret-key: ${{secrets.SECRET_KEY}}
+              expire-length: ${{secrets.EXPIRE_LENGTH}}
         run: make build
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: ${{secrets.TEST_COVERAGE}}
           JACOCO_SOURCE_PATH: ${{github.workspace}}/src/main/java
-          security:
-            jwt:
-              secret-key: ${{secrets.SECRET_KEY}}
-              expire-length: ${{secrets.EXPIRE_LENGTH}}
         with:
           coverageCommand: make report
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
