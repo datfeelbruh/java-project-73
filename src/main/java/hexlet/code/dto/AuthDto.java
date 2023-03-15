@@ -1,9 +1,11 @@
 package hexlet.code.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class AuthDto {
+@Builder
+public class AuthDto implements Dto{
     private String email;
     private String password;
 }

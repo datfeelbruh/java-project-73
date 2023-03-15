@@ -1,15 +1,19 @@
-package hexlet.code.contoroller;
-
+package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.config.SpringConfigForIT;
+import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.UserDtoRq;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.security.JwtTokenUtil;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,6 +57,10 @@ public final class UserControllerIT {
     private UserRepository userRepository;
     @Autowired
     private TestUtils utils;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserControllerIT.class);
 
     private static final UserDtoRq SAMPLE_USER = TestUtils.fromJson(
             TestUtils.readFixtureJson("sampleUser.json"),
@@ -62,6 +71,12 @@ public final class UserControllerIT {
     private static final UserDtoRq ANOTHER_USER = TestUtils.fromJson(
             TestUtils.readFixtureJson("anotherUser.json"),
             new TypeReference<UserDtoRq>() {
+            }
+    );
+
+    private static final AuthDto AUTH_DTO = TestUtils.fromJson(
+            TestUtils.readFixtureJson("authDto.json"),
+            new TypeReference<AuthDto>() {
             }
     );
 
@@ -127,8 +142,11 @@ public final class UserControllerIT {
     public void putUser() throws Exception {
         User userToUpdate = userRepository.findAll().get(0);
 
+        String token = utils.getToken(utils.getAuthData(SAMPLE_USER));
+
         MockHttpServletRequestBuilder request =
                 put(USER_CONTROLLER_PATH + ID, userToUpdate.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .content(asJson(ANOTHER_USER))
                         .contentType(MediaType.APPLICATION_JSON);
 
@@ -144,9 +162,28 @@ public final class UserControllerIT {
 
         User userToDelete = userRepository.findAll().get(0);
 
-        utils.perform(delete(USER_CONTROLLER_PATH + ID, userToDelete.getId()))
-                .andExpect(status().isOk());
+        String token = utils.getToken(utils.getAuthData(SAMPLE_USER));
+
+        MockHttpServletRequestBuilder request =
+                delete(USER_CONTROLLER_PATH + ID, userToDelete.getId())
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+
+        utils.perform(request).andExpect(status().isOk());
 
         assertNull(userRepository.findByEmail(userToDelete.getEmail()).orElse(null));
+    }
+
+    @Test
+    @DisplayName(value = "Тест на успешную аутентификацию пользователя")
+    public void authUser() throws Exception {
+        MockHttpServletResponse response = utils
+                .regEntity(AUTH_DTO, "/api/login")
+                .andReturn()
+                .getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(200);
+        String token = response.getContentAsString();
+
+        assertThat(jwtTokenUtil.getEmail(token)).isEqualTo(AUTH_DTO.getEmail());
     }
 }

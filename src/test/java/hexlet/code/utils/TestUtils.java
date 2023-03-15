@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.Dto;
+import hexlet.code.dto.UserDtoRq;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -15,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,6 +32,9 @@ public final class TestUtils {
     private MockMvc mockMvc;
 
     @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
     private UserRepository userRepository;
 
     private static final ObjectMapper MAPPER = new ObjectMapper()
@@ -36,6 +44,7 @@ public final class TestUtils {
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
         return mockMvc.perform(request);
     }
+
 
     public static String asJson(final Object object) throws JsonProcessingException {
         return MAPPER.writeValueAsString(object);
@@ -63,6 +72,20 @@ public final class TestUtils {
                 .contentType(APPLICATION_JSON);
 
         return perform(request);
+    }
+
+    public String getToken(Dto dto) throws Exception {
+        return regEntity(dto, "/api/login")
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+    }
+
+    public AuthDto getAuthData(UserDtoRq dto) {
+        return AuthDto.builder()
+                .email(dto.getEmail())
+                .password(dto.getPassword())
+                .build();
     }
 
 }
