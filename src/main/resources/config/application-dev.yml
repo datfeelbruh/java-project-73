@@ -12,7 +12,7 @@ spring:
   h2:
     console:
       enabled: true
-      path: /h2console
+      path: /h2-console
       settings:
         web-allow-others: true
 

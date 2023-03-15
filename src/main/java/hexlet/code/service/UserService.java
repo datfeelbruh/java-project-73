@@ -1,20 +1,25 @@
 package hexlet.code.service;
 
-import hexlet.code.dto.UserDto;
+import hexlet.code.dto.UserDtoRq;
 import hexlet.code.exception.ResourceNotFoundException;
 
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.security.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public final class UserService {
+public final class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -30,24 +35,24 @@ public final class UserService {
         return userRepository.findAll();
     }
 
-    public User createUser(UserDto userDto) {
+    public User createUser(UserDtoRq userDtoRq) {
         User user = new User();
 
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setEmail(userDtoRq.getEmail());
+        user.setFirstName(userDtoRq.getFirstName());
+        user.setLastName(userDtoRq.getLastName());
+        user.setPassword(passwordEncoder.encode(userDtoRq.getPassword()));
 
         return userRepository.save(user);
     }
 
-    public User updateUser(UserDto userDto, Long id) {
+    public User updateUser(UserDtoRq userDtoRq, Long id) {
         User userToUpdate = findById(id);
 
-        userToUpdate.setEmail(userDto.getEmail());
-        userToUpdate.setFirstName(userDto.getFirstName());
-        userToUpdate.setLastName(userDto.getLastName());
-        userToUpdate.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userToUpdate.setEmail(userDtoRq.getEmail());
+        userToUpdate.setFirstName(userDtoRq.getFirstName());
+        userToUpdate.setLastName(userDtoRq.getLastName());
+        userToUpdate.setPassword(passwordEncoder.encode(userDtoRq.getPassword()));
 
         return userRepository.save(userToUpdate);
     }
@@ -61,5 +66,19 @@ public final class UserService {
         return userRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("User with id " + id + " not found"));
+    }
+
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User with login " + email + " not found")
+                );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with this " + email + " not found"));
     }
 }

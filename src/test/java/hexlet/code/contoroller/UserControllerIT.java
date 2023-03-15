@@ -3,7 +3,7 @@ package hexlet.code.contoroller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.config.SpringConfigForIT;
-import hexlet.code.dto.UserDto;
+import hexlet.code.dto.UserDtoRq;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.utils.TestUtils;
@@ -53,15 +53,15 @@ public final class UserControllerIT {
     @Autowired
     private TestUtils utils;
 
-    private static final UserDto SAMPLE_USER = TestUtils.fromJson(
+    private static final UserDtoRq SAMPLE_USER = TestUtils.fromJson(
             TestUtils.readFixtureJson("sampleUser.json"),
-            new TypeReference<UserDto>() {
+            new TypeReference<UserDtoRq>() {
             }
     );
 
-    private static final UserDto ANOTHER_USER = TestUtils.fromJson(
+    private static final UserDtoRq ANOTHER_USER = TestUtils.fromJson(
             TestUtils.readFixtureJson("anotherUser.json"),
-            new TypeReference<UserDto>() {
+            new TypeReference<UserDtoRq>() {
             }
     );
 

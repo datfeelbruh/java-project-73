@@ -5,15 +5,15 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-@Builder
+import java.util.Date;
+
 @Getter
 @Setter
-public class UserDto implements Dto {
-    @NonNull
+@Builder
+public class UserDtoRs {
+    private Long id;
     private String email;
-    @NonNull
     private String firstName;
-    @NonNull
     private String lastName;
-    private String password;
+    private Date createdAt;
 }
