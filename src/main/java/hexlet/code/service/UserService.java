@@ -5,11 +5,9 @@ import hexlet.code.exception.ResourceNotFoundException;
 
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
-import hexlet.code.security.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

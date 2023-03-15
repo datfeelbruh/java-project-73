@@ -1,14 +1,10 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.AuthDto;
-import hexlet.code.dto.UserDtoRs;
-import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.security.JwtTokenUtil;
 import hexlet.code.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +30,6 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private UserMapper userMapper;
-    private final static Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("")
     public ResponseEntity<String> login(@RequestBody AuthDto authDto) {

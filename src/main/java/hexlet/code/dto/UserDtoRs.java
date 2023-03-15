@@ -2,7 +2,6 @@ package hexlet.code.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.Date;

@@ -1,11 +1,7 @@
 package hexlet.code.security;
 
-import hexlet.code.controller.AuthController;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.UserService;
-import liquibase.pro.packaged.S;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +26,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
-    private final static Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
