@@ -4,8 +4,6 @@ server:
 base-url: /api
 
 spring:
-  config:
-    import: secrets.yml
   application:
     name: project-5
   profiles:
