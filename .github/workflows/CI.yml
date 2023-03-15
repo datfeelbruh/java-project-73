@@ -12,11 +12,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build with Gradle
-        spring:
-          security:
-            jwt:
-              secret-key: ${{secrets.SECRET_KEY}}
-              expire-length: ${{secrets.EXPIRE_LENGTH}}
+        env:
+          security.jwt.secret-key: ${{secrets.SECRET_KEY}}
+          security.jwt.expire-length: ${{secrets.EXPIRE_LENGTH}}
         run: make build
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
