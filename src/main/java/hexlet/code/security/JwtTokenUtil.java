@@ -21,7 +21,7 @@ public class JwtTokenUtil {
     private String jwtSecret;
     @Value("${jwt.expired}")
     private Long jwtExpired;
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
+    private static final Logger JWT_UTIL_LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);
 
     public String createToken(User user) {
         Date now = new Date();
@@ -57,15 +57,15 @@ public class JwtTokenUtil {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         } catch (SignatureException ex) {
-            logger.error("Invalid JWT signature - {}", ex.getMessage());
+            JWT_UTIL_LOGGER.error("Invalid JWT signature - {}", ex.getMessage());
         } catch (MalformedJwtException ex) {
-            logger.error("Invalid JWT token - {}", ex.getMessage());
+            JWT_UTIL_LOGGER.error("Invalid JWT token - {}", ex.getMessage());
         } catch (ExpiredJwtException ex) {
-            logger.error("Expired JWT token - {}", ex.getMessage());
+            JWT_UTIL_LOGGER.error("Expired JWT token - {}", ex.getMessage());
         } catch (UnsupportedJwtException ex) {
-            logger.error("Unsupported JWT token - {}", ex.getMessage());
+            JWT_UTIL_LOGGER.error("Unsupported JWT token - {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {
-            logger.error("JWT claims string is empty - {}", ex.getMessage());
+            JWT_UTIL_LOGGER.error("JWT claims string is empty - {}", ex.getMessage());
         }
         return false;
     }
