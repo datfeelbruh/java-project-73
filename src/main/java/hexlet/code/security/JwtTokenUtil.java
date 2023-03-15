@@ -16,9 +16,9 @@ import java.util.Date;
 
 @Component
 public class JwtTokenUtil {
-    @Value("${JWT_SECRET}")
+    @Value("${security.jwt.secret-key}")
     private String jwtSecret;
-    @Value("${JWT_EXPR}")
+    @Value("${security.jwt.expire-length}")
     private Long jwtExpired;
 
     private static final Logger JWT_UTIL_LOGGER = LoggerFactory.getLogger(JwtTokenUtil.class);

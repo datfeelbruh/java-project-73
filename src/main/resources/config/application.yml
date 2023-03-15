@@ -4,12 +4,15 @@ server:
 base-url: /api
 
 spring:
+  config:
+    import: secrets.yml
   application:
     name: project-5
   profiles:
-    active: prod
+    active: dev
   security:
     filter-order: 10
+
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.xml
