@@ -18,6 +18,10 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{secrets.TEST_COVERAGE}}
           JACOCO_SOURCE_PATH: ${{github.workspace}}/src/main/java
+          security:
+            jwt:
+              secret-key: ${{secrets.SECRET_KEY}}
+              expire-length: ${{secrets.EXPIRE_LENGTH}}
         with:
           coverageCommand: make report
           coverageLocations: ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml:jacoco
