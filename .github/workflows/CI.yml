@@ -15,9 +15,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          env:
-            JWT_EXPR: ${{JWT_EXPR}}
-            JWT_SECRET: ${{JWT_SECRET}}
       - name: Build with Gradle
         run: make build
       - name: Publish code coverage
