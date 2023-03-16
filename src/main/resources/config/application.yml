@@ -7,7 +7,7 @@ spring:
   application:
     name: project-5
   profiles:
-    active: prod
+    active: dev
   security:
     filter-order: 10
 
