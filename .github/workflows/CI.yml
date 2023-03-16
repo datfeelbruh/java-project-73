@@ -2,8 +2,8 @@ name: main CI
 on:
   - push
 env:
-  JWT_EXPR: ${{ env.JWT_EXPR}}
-  JWT_SECRET: ${{ env.JWT_SECRET}}
+  JWT_EXPR: ${{JWT_EXPR}}
+  JWT_SECRET: ${{JWT_SECRET}}
 jobs:
   gradle:
     runs-on: ubuntu-latest
