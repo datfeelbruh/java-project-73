@@ -1,6 +1,9 @@
 name: main CI
 on:
   - push
+env:
+  JWT_EXPR: ${{ env.JWT_EXPR}}
+  JWT_SECRET: ${{ env.JWT_SECRET}}
 jobs:
   gradle:
     runs-on: ubuntu-latest
@@ -12,9 +15,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build with Gradle
-        env:
-          security.jwt.secret-key: ${{secrets.SECRET_KEY}}
-          security.jwt.expire-length: ${{secrets.EXPIRE_LENGTH}}
         run: make build
       - name: Publish code coverage
         uses: paambaati/codeclimate-action@v3.0.0
