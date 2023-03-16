@@ -2,7 +2,6 @@ name: main CI
 
 env:
   JWT_EXPR: ${{JWT_EXPR}}
-  JWT_SECRET: ${{JWT_SECRET}}
 
 on:
   - push
