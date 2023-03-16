@@ -1,10 +1,12 @@
 name: main CI
-on:
-  - push
-  -
+
 env:
   JWT_EXPR: ${{JWT_EXPR}}
   JWT_SECRET: ${{JWT_SECRET}}
+
+on:
+  - push
+  -
 
 jobs:
   gradle:
