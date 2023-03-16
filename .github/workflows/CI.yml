@@ -1,8 +1,5 @@
 name: main CI
 
-env:
-  JWT_EXPR: ${{JWT_EXPR}}
-
 on:
   - push
   -
@@ -10,6 +7,10 @@ on:
 jobs:
   gradle:
     runs-on: ubuntu-latest
+    env:
+      JWT_EXPR: ${{JWT_EXPR}}
+      JWT_SECRET: ${{JWT_SECRET}}
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 17 
