@@ -137,11 +137,9 @@ public final class UserControllerIT {
     public void putUser() throws Exception {
         User userToUpdate = userRepository.findAll().get(0);
 
-        String token = utils.getToken(utils.getAuthData(SAMPLE_USER));
-
         MockHttpServletRequestBuilder request =
                 put(USER_CONTROLLER_PATH + ID, userToUpdate.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + utils.getToken(SAMPLE_USER))
                         .content(asJson(ANOTHER_USER))
                         .contentType(MediaType.APPLICATION_JSON);
 
@@ -157,11 +155,9 @@ public final class UserControllerIT {
 
         User userToDelete = userRepository.findAll().get(0);
 
-        String token = utils.getToken(utils.getAuthData(SAMPLE_USER));
-
         MockHttpServletRequestBuilder request =
                 delete(USER_CONTROLLER_PATH + ID, userToDelete.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + utils.getToken(SAMPLE_USER));
 
         utils.perform(request).andExpect(status().isOk());
 
