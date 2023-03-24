@@ -3,11 +3,15 @@ server:
 
 base-url: /api
 
+springdoc:
+  swagger-ui:
+    path: /swagger.html
+
 spring:
   application:
     name: project-5
   profiles:
-    active: dev
+    active: prod
   security:
     filter-order: 10
 

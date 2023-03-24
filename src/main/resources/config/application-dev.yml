@@ -1,5 +1,7 @@
 spring:
   datasource:
+    platform: h2
+    driverClassName: org.h2.Driver
     username: ""
     password: ""
     url: "jdbc:h2:./localDB"

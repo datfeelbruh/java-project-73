@@ -8,7 +8,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class UserDtoRq implements Dto {
+public class UserDtoRequest implements Dto {
     @NonNull
     private String email;
     @NonNull

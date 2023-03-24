@@ -4,21 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.Dto;
-import hexlet.code.dto.UserDtoRq;
 import hexlet.code.repository.UserRepository;
-import hexlet.code.security.JwtTokenUtil;
+import hexlet.code.config.security.JwtTokenUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -35,11 +36,20 @@ public final class TestUtils {
     @Autowired
     private UserRepository userRepository;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
+
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .findAndRegisterModules()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
+        return mockMvc.perform(request);
+    }
+
+    public ResultActions perform(final MockHttpServletRequestBuilder request, final String byUser) throws Exception {
+        final String token = jwtTokenUtil.createToken(Map.of("username", byUser));
+        request.header(AUTHORIZATION, "Bearer " + token);
+
         return mockMvc.perform(request);
     }
 
@@ -72,18 +82,12 @@ public final class TestUtils {
         return perform(request);
     }
 
-    public String getToken(Dto dto) throws Exception {
-        return regEntity(dto, "/api/login")
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-    }
+    public ResultActions regEntity(Dto dto, String email, String path) throws Exception {
+        final MockHttpServletRequestBuilder request = post(path)
+                .content(asJson(dto))
+                .contentType(APPLICATION_JSON);
 
-    public AuthDto getAuthData(UserDtoRq dto) {
-        return AuthDto.builder()
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .build();
+        return perform(request, email);
     }
 
 }

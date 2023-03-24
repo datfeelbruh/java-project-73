@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-public class UserDtoRs {
+public class UserDtoResponse {
     private Long id;
     private String email;
     private String firstName;
