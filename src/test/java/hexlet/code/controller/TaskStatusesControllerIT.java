@@ -8,7 +8,6 @@ import hexlet.code.model.TaskStatus;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,7 +30,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static hexlet.code.controller.UserController.USER_CONTROLLER_PATH;
 import static hexlet.code.utils.TestUtils.fromJson;
 import static hexlet.code.utils.TestUtils.asJson;
 import static hexlet.code.controller.TaskStatusController.TASK_STATUS_CONTROLLER_PATH;
@@ -54,17 +51,20 @@ public class TaskStatusesControllerIT {
     @Autowired
     private UserRepository userRepository;
     private final UserDtoRequest sampleUser = UserControllerIT.getSampleUser();
-    private final TaskStatusDtoRequest sampleTaskStatus = new TaskStatusDtoRequest("Sample task status");
-    private final TaskStatusDtoRequest anotherTaskStatus = new TaskStatusDtoRequest("Another task status");
+    private static final TaskStatusDtoRequest SAMPLE_TASK_STATUS = new TaskStatusDtoRequest("Sample task status");
+    private static final TaskStatusDtoRequest ANOTHER_TASK_STATUS = new TaskStatusDtoRequest("Another task status");
+
+    public static TaskStatusDtoRequest getSampleTaskStatus() {
+        return SAMPLE_TASK_STATUS;
+    }
 
     @BeforeEach
     public void beforeEach() throws Exception {
-        utils.regEntity(sampleUser, USER_CONTROLLER_PATH);
+        utils.setUp();
     }
 
     @Test
-    @DisplayName(value = "Тест на создание нового статуса")
-    public void createTaskStatuses() throws Exception {
+    public void createTaskStatus() throws Exception {
         regDefaultStatus()
                 .andExpect(status().isCreated());
 
@@ -72,17 +72,12 @@ public class TaskStatusesControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на попытку создания нового статуса, от незалогиненного юзера")
-    public void createTaskStatusesByUnauthenticatedUser() throws Exception {
-        try {
-            utils.regEntity(anotherTaskStatus, TASK_STATUS_CONTROLLER_PATH);
-        } catch (Exception e) {
-            assertThat(e.getMessage()).isEqualTo(HttpStatus.UNAUTHORIZED.toString());
-        }
+    public void createTaskStatusAnUnauthorized() throws Exception {
+        utils.regEntity(ANOTHER_TASK_STATUS, TASK_STATUS_CONTROLLER_PATH).andExpect(status().isForbidden());
+        assertThat(taskStatusRepository.findAll().size()).isEqualTo(0);
     }
 
     @Test
-    @DisplayName(value = "Тест на обновление статуса")
     public void updateTask() throws Exception {
         regDefaultStatus();
 
@@ -90,23 +85,35 @@ public class TaskStatusesControllerIT {
 
         MockHttpServletRequestBuilder request =
                 put(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusToUpdate.getId())
-                        .content(asJson(anotherTaskStatus))
+                        .content(asJson(ANOTHER_TASK_STATUS))
                         .contentType(MediaType.APPLICATION_JSON);
 
-
-        utils
-                .perform(request, sampleUser.getEmail())
-                .andExpect(status().isOk());
-
-
+        utils.perform(request, sampleUser.getEmail()).andExpect(status().isOk());
 
         assertThat(taskStatusRepository
                 .findById(taskStatusToUpdate.getId()).get().getName())
-                .isEqualTo(anotherTaskStatus.getName());
+                .isEqualTo(ANOTHER_TASK_STATUS.getName());
     }
 
     @Test
-    @DisplayName(value = "Тест на получение статуса")
+    public void updateTaskAnUnauthorized() throws Exception {
+        regDefaultStatus();
+
+        TaskStatus taskStatusToUpdate = taskStatusRepository.findAll().get(0);
+
+        MockHttpServletRequestBuilder request =
+                put(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusToUpdate.getId())
+                        .content(asJson(ANOTHER_TASK_STATUS))
+                        .contentType(MediaType.APPLICATION_JSON);
+
+        utils.perform(request).andExpect(status().isForbidden());
+
+        assertThat(taskStatusRepository
+                .findById(taskStatusToUpdate.getId()).get().getName())
+                .isEqualTo(SAMPLE_TASK_STATUS.getName());
+    }
+
+    @Test
     public void getTaskStatus() throws Exception {
         regDefaultStatus();
 
@@ -121,7 +128,7 @@ public class TaskStatusesControllerIT {
                 .andReturn()
                 .getResponse();
 
-        TaskStatus actualStatus = fromJson(response.getContentAsString(), new TypeReference<TaskStatus>() {
+        TaskStatus actualStatus = fromJson(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertThat(actualStatus.getId()).isEqualTo(taskStatus.getId());
@@ -129,11 +136,9 @@ public class TaskStatusesControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на получение всех статусов")
     public void getAllTaskStatuses() throws Exception {
         regDefaultStatus();
-        utils.regEntity(anotherTaskStatus, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH);
-
+        utils.regEntity(ANOTHER_TASK_STATUS, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH);
         MockHttpServletResponse response = utils.perform(
                 get(TASK_STATUS_CONTROLLER_PATH), sampleUser.getEmail())
                 .andExpect(status().isOk())
@@ -147,7 +152,6 @@ public class TaskStatusesControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на удаление статуса")
     public void deleteStatus() throws Exception {
         regDefaultStatus();
 
@@ -163,7 +167,21 @@ public class TaskStatusesControllerIT {
         assertThat(taskStatusRepository.findAll().size()).isEqualTo(0);
     }
 
+    @Test
+    public void deleteStatusAnUnauthorized() throws Exception {
+        regDefaultStatus();
+
+        TaskStatus taskStatusToDelete = taskStatusRepository.findAll().get(0);
+
+        MockHttpServletRequestBuilder request =
+                delete(TASK_STATUS_CONTROLLER_PATH + ID, taskStatusToDelete.getId());
+
+        utils.perform(request).andExpect(status().isForbidden());
+
+        assertThat(taskStatusRepository.findAll().size()).isEqualTo(1);
+    }
+
     private ResultActions regDefaultStatus() throws Exception {
-        return utils.regEntity(sampleTaskStatus, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH);
+        return utils.regEntity(SAMPLE_TASK_STATUS, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH);
     }
 }

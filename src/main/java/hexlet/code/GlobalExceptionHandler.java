@@ -1,5 +1,7 @@
 package hexlet.code;
 
+import hexlet.code.exception.CustomAuthorizationException;
+import hexlet.code.exception.CustomConstraintException;
 import hexlet.code.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,28 @@ public final class GlobalExceptionHandler {
                         HttpStatus.UNPROCESSABLE_ENTITY.value(),
                         e.getMessage()),
                         HttpStatus.UNPROCESSABLE_ENTITY
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<RequestError> catchCustomAuthorizationException(CustomAuthorizationException e) {
+        EXCEPTION_LOGGER.error(e.getMessage(), e);
+        return new ResponseEntity<>(
+                new RequestError(
+                        HttpStatus.FORBIDDEN.value(),
+                        e.getMessage()),
+                        HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<RequestError> catchCustomConstraintException(CustomConstraintException e) {
+        EXCEPTION_LOGGER.error(e.getMessage(), e);
+        return new ResponseEntity<>(
+                new RequestError(
+                        HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                        e.getMessage()),
+                HttpStatus.UNPROCESSABLE_ENTITY
         );
     }
 }

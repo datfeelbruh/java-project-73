@@ -1,18 +1,24 @@
 package hexlet.code.service;
 
 import hexlet.code.dto.UserDtoRequest;
+import hexlet.code.exception.CustomConstraintException;
 import hexlet.code.exception.ResourceNotFoundException;
 
+import hexlet.code.model.Task;
 import hexlet.code.model.User;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import static hexlet.code.config.security.SecurityConfig.DEFAULT_AUTHORITIES;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +28,8 @@ public final class UserService implements UserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TaskRepository taskRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -59,6 +67,11 @@ public final class UserService implements UserDetailsService {
 
     public void deleteUser(Long id) {
         User user = findById(id);
+
+        if (checkUserAndTaskAssociations(user.getId())) {
+            throw new CustomConstraintException("Unable to delete user associated with any task");
+        }
+
         userRepository.delete(user);
     }
 
@@ -68,12 +81,9 @@ public final class UserService implements UserDetailsService {
                         () -> new ResourceNotFoundException("User with id " + id + " not found"));
     }
 
-
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User with login " + email + " not found")
-                );
+    public User getCurrentUser() {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return getUserByEmail(currentUserEmail);
     }
 
     @Override
@@ -87,5 +97,28 @@ public final class UserService implements UserDetailsService {
                 DEFAULT_AUTHORITIES
         );
 
+    }
+
+    private User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User with login " + email + " not found")
+                );
+    }
+
+    private boolean checkUserAndTaskAssociations(Long userId) {
+        long countAuthorSameId = taskRepository.findAll()
+                .stream()
+                .map(Task::getAuthor)
+                .filter(e -> e.getId() == userId)
+                .count();
+
+        long countExecutorSameId = taskRepository.findAll()
+                .stream()
+                .map(Task::getExecutor)
+                .filter(e -> e.getId() == userId)
+                .count();
+
+        return (countExecutorSameId + countAuthorSameId) != 0;
     }
 }

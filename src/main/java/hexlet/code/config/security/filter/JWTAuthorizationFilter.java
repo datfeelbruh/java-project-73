@@ -45,22 +45,16 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        LOGGER.info("{}", header);
 
         if (header == null || !header.startsWith(BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
-        LOGGER.info("{}", header);
         final String token = header.split(" ")[1].trim();
         if (!jwtTokenUtil.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;
         }
-        LOGGER.error("{}", jwtTokenUtil.verify(token));
-        LOGGER.error("{}", token);
-
-
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(

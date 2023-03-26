@@ -2,7 +2,6 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.TaskStatusDtoRequest;
 import hexlet.code.model.TaskStatus;
-import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.service.TaskStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,8 +27,6 @@ import java.util.List;
 public class TaskStatusController {
     public static final String TASK_STATUS_CONTROLLER_PATH = "/api/statuses";
     public static final String ID = "/{id}";
-    @Autowired
-    private TaskStatusRepository taskStatusRepository;
     @Autowired
     private TaskStatusService taskStatusService;
 

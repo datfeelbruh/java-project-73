@@ -5,11 +5,11 @@ import hexlet.code.config.SpringConfigForIT;
 import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.model.User;
+import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.config.security.JwtTokenUtil;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +57,8 @@ public final class UserControllerIT {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private TaskRepository taskRepository;
+    @Autowired
     private TestUtils utils;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -77,15 +79,18 @@ public final class UserControllerIT {
         return SAMPLE_USER;
     }
 
+    public static UserDtoRequest getAnotherUser() {
+        return ANOTHER_USER;
+    }
+
     @BeforeEach
     public void beforeEach() throws Exception {
-        userRepository.deleteAll();
+        utils.setUp();
         utils.regEntity(SAMPLE_USER, USER_CONTROLLER_PATH);
     }
 
     @Test
-    @DisplayName(value = "Тест получения пользователя по id")
-    public void getUserById() throws Exception {
+    public void getUser() throws Exception {
         User expectedUser = userRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -107,7 +112,16 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест получения всех пользователей")
+    public void getUserAnUnauthorized() throws Exception {
+        User expectedUser = userRepository.findAll().get(0);
+
+        MockHttpServletRequestBuilder request =
+                get(USER_CONTROLLER_PATH + ID, expectedUser.getId());
+
+        utils.perform(request).andExpect(status().isForbidden());
+    }
+
+    @Test
     public void getAllUsers() throws Exception {
         utils.regEntity(ANOTHER_USER, USER_CONTROLLER_PATH);
 
@@ -124,8 +138,7 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест создания пользователя")
-    public void postUser() throws Exception {
+    public void createUser() throws Exception {
 
         MockHttpServletResponse response = utils
                 .regEntity(ANOTHER_USER, USER_CONTROLLER_PATH)
@@ -137,7 +150,6 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест изменение данных пользователя")
     public void updateUser() throws Exception {
         User userToUpdate = userRepository.findAll().get(0);
 
@@ -155,7 +167,22 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Изменение пользователя другим пользователем")
+    public void updateUserAnUnauthorized() throws Exception {
+        User userToUpdate = userRepository.findAll().get(0);
+
+        MockHttpServletRequestBuilder request =
+                put(USER_CONTROLLER_PATH + ID, userToUpdate.getId())
+                        .content(asJson(ANOTHER_USER))
+                        .contentType(MediaType.APPLICATION_JSON);
+
+        utils
+                .perform(request)
+                .andExpect(status().isForbidden());
+
+        assertThat(userRepository.findAll().get(0).getEmail()).isNotEqualTo(ANOTHER_USER.getEmail());
+    }
+
+    @Test
     public void updateUserByAnotherUser() throws Exception {
         utils.regEntity(ANOTHER_USER, USER_CONTROLLER_PATH);
 
@@ -175,7 +202,6 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на удаление пользователя")
     public void deleteUser() throws Exception {
         User userToDelete = userRepository.findAll().get(0);
 
@@ -190,7 +216,20 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Попытка удаления пользователя другим пользователем")
+    public void deleteUserAnUnauthorized() throws Exception {
+        User userToDelete = userRepository.findAll().get(0);
+
+        MockHttpServletRequestBuilder request =
+                delete(USER_CONTROLLER_PATH + ID, userToDelete.getId());
+
+        utils
+                .perform(request)
+                .andExpect(status().isForbidden());
+
+        assertNotNull(userRepository.findByEmail(userToDelete.getEmail()).orElse(null));
+    }
+
+    @Test
     public void deleteUserByAnotherUser() throws Exception {
         utils.regEntity(ANOTHER_USER, USER_CONTROLLER_PATH);
 
@@ -208,8 +247,22 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на успешный логин зарегестрированного пользователя")
-    public void authUser() throws Exception {
+    public void deleteUserWithTask() throws Exception {
+        User userToDelete = userRepository.findAll().get(0);
+
+
+        MockHttpServletRequestBuilder request =
+                delete(USER_CONTROLLER_PATH + ID, userToDelete.getId());
+
+        utils
+                .perform(request, userToDelete.getEmail())
+                .andExpect(status().isOk());
+
+        assertNull(userRepository.findByEmail(userToDelete.getEmail()).orElse(null));
+    }
+
+    @Test
+    public void authRegisteredUser() throws Exception {
         AuthDto authDto = new AuthDto(SAMPLE_USER.getEmail(), SAMPLE_USER.getPassword());
 
         MockHttpServletRequestBuilder login =
@@ -221,7 +274,6 @@ public final class UserControllerIT {
     }
 
     @Test
-    @DisplayName(value = "Тест на неуспешный логин незарегистрированного пользователя")
     public void authUnregisteredUser() throws Exception {
         AuthDto authDto = new AuthDto(ANOTHER_USER.getEmail(), ANOTHER_USER.getPassword());
 
