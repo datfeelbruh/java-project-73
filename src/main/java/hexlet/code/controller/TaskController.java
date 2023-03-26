@@ -2,8 +2,14 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.TaskDtoRequest;
 import hexlet.code.model.Task;
+import hexlet.code.model.User;
 import hexlet.code.service.TaskService;
 import hexlet.code.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping(value = "${base-url}" + "/tasks")
 public class TaskController {
     public static final String TASK_CONTROLLER_PATH = "/api/tasks";
@@ -28,10 +34,20 @@ public class TaskController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "Get task by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task with that ID was found"),
+    })
     @GetMapping(ID)
     public Task getTaskById(@PathVariable Long id) {
         return taskService.getTask(id);
     }
+
+    @Operation(summary = "Get a list of all tasks")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", content =
+            @Content(schema =
+            @Schema(implementation = Task.class)))
+    })
     @GetMapping("")
     public List<Task> getAllTasks() {
         return taskService.getAllTasks();

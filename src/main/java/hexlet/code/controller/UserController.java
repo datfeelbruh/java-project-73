@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,8 +63,8 @@ public class UserController {
                 .toList();
     }
 
-    @Operation(summary = "Create a new user")
-    @ApiResponse(responseCode = "201", description = "User created")
+    @Operation(summary = "Create a new task")
+    @ApiResponse(responseCode = "201", description = "Task created")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public UserDtoResponse createUser(@RequestBody UserDtoRequest userDtoRequest) {

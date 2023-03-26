@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController()
+@RestController
 @RequestMapping(value = "${base-url}" + "/statuses")
 public class TaskStatusController {
     public static final String TASK_STATUS_CONTROLLER_PATH = "/api/statuses";
