@@ -61,6 +61,9 @@ public class LabelControllerIT {
     public static LabelDtoRequest getSampleLabel() {
         return SAMPLE_LABEL;
     }
+    public static LabelDtoRequest getAnotherLabel() {
+        return ANOTHER_LABEL;
+    }
 
     @BeforeEach
     public void beforeEach() throws Exception {

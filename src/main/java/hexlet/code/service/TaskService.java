@@ -1,5 +1,7 @@
 package hexlet.code.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.querydsl.core.types.Predicate;
 import hexlet.code.dto.TaskDtoRequest;
 import hexlet.code.exception.CustomAuthorizationException;
 import hexlet.code.exception.ResourceNotFoundException;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
     @Autowired
+    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
     private TaskRepository taskRepository;
     @Autowired
     private UserService userService;
@@ -35,6 +39,10 @@ public class TaskService {
         return findById(id);
     }
 
+    public List<Task> getFilteredTasks(Predicate predicate) {
+        return taskRepository.findAll(predicate);
+    }
+
     public Task createTask(TaskDtoRequest taskDtoRequest) {
         Task task = new Task();
 
@@ -43,8 +51,8 @@ public class TaskService {
         task.setTaskStatus(taskStatusService.getTaskStatusById(taskDtoRequest.getTaskStatusId()));
         task.setAuthor(userService.getCurrentUser());
         task.setExecutor(userService.getUserById(taskDtoRequest.getExecutorId()));
-        if (taskDtoRequest.getLabelsIds() != null) {
-            task.setLabels(getLabelsByIds(taskDtoRequest.getLabelsIds()));
+        if (taskDtoRequest.getLabels() != null) {
+            task.setLabels(getLabelsByIds(taskDtoRequest.getLabels()));
         }
 
         return taskRepository.save(task);
@@ -59,8 +67,8 @@ public class TaskService {
         taskToUpdate.setDescription(taskDtoRequest.getDescription());
         taskToUpdate.setExecutor(userService.getUserById(taskDtoRequest.getExecutorId()));
         taskToUpdate.setTaskStatus(taskStatusService.getTaskStatusById(taskDtoRequest.getTaskStatusId()));
-        if (taskDtoRequest.getLabelsIds() != null) {
-            taskToUpdate.setLabels(getLabelsByIds(taskDtoRequest.getLabelsIds()));
+        if (taskDtoRequest.getLabels() != null) {
+            taskToUpdate.setLabels(getLabelsByIds(taskDtoRequest.getLabels()));
         }
 
         return taskRepository.save(taskToUpdate);

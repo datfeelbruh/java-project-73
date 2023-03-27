@@ -33,7 +33,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -64,6 +67,7 @@ public class TaskControllerIT {
     private final TaskStatusDtoRequest sampleTaskStatus = TaskStatusesControllerIT.getSampleTaskStatus();
     private final LabelDtoRequest sampleLabel = LabelControllerIT.getSampleLabel();
     private TaskDtoRequest sampleTask;
+    private TaskDtoRequest anotherTask;
     @Autowired
     private TestUtils utils;
     @Autowired
@@ -81,14 +85,28 @@ public class TaskControllerIT {
 
         utils.regEntity(sampleUser, USER_CONTROLLER_PATH).andExpect(status().isCreated());
         utils.regEntity(anotherUser, USER_CONTROLLER_PATH).andExpect(status().isCreated());
+
         utils.regEntity(
                 sampleTaskStatus,
                 sampleUser.getEmail(),
                 TASK_STATUS_CONTROLLER_PATH
         );
+
         utils.regEntity(
                 sampleLabel,
                 sampleUser.getEmail(),
+                LABEL_CONTROLLER_PATH
+        );
+
+        utils.regEntity(
+                TaskStatusesControllerIT.getAnotherTaskStatus(),
+                anotherUser.getEmail(),
+                TASK_STATUS_CONTROLLER_PATH
+        );
+
+        utils.regEntity(
+                LabelControllerIT.getAnotherLabel(),
+                anotherUser.getEmail(),
                 LABEL_CONTROLLER_PATH
         );
 
@@ -96,8 +114,16 @@ public class TaskControllerIT {
                 .name("Sample task name")
                 .description("Sample task desc")
                 .taskStatusId(taskStatusRepository.findAll().get(0).getId())
-                .executorId(userRepository.findAll().get(0).getId())
-                .labelsIds(Set.of(labelRepository.findAll().get(0).getId()))
+                .executorId(userRepository.findAll().get(1).getId())
+                .labels(Set.of(labelRepository.findAll().get(0).getId()))
+                .build();
+
+        anotherTask = TaskDtoRequest.builder()
+                .name("Another task name")
+                .description("Another task desc")
+                .taskStatusId(taskStatusRepository.findAll().get(0).getId())
+                .executorId(userRepository.findAll().get(1).getId())
+                .labels(Set.of(labelRepository.findAll().get(0).getId()))
                 .build();
     }
 
@@ -117,7 +143,7 @@ public class TaskControllerIT {
     }
 
     @Test
-    public void getTask() throws Exception {
+    public void getTasksWithoutFilter() throws Exception {
         regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
         LOGGER.info("{}", expectedTask);
@@ -137,6 +163,37 @@ public class TaskControllerIT {
     }
 
     @Test
+    public void getTasksWithFilter() throws Exception {
+
+        regDefaultTask();
+        utils.regEntity(anotherTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
+
+        Long executorId = userRepository.findByEmail(anotherUser.getEmail()).get().getId();
+        Long authorId = userRepository.findByEmail(sampleUser.getEmail()).get().getId();
+
+        MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+        requestParams.add("executorId", executorId + "");
+        requestParams.add("authorId", authorId + "");
+
+
+        MockHttpServletResponse responseContent = utils.perform(
+                        get(TASK_CONTROLLER_PATH)
+                        .params(requestParams),
+                        sampleUser.getEmail()
+                )
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        List<Task> actual = fromJson(responseContent.getContentAsString(), new TypeReference<>() {
+        });
+
+
+        assertThat(actual.size()).isEqualTo(2);
+    }
+
+    @Test
     public void getTaskAnUnauthorized() throws Exception {
         regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
@@ -153,7 +210,6 @@ public class TaskControllerIT {
     public void updateTask() throws Exception {
         regDefaultTask();
         Task taskToUpdate = taskRepository.findAll().get(0);
-        LOGGER.info("{}", taskToUpdate);
         TaskDtoRequest anotherTask = new TaskDtoRequest();
         anotherTask.setName("Another task name");
         anotherTask.setDescription("Another task desc");
@@ -274,7 +330,7 @@ public class TaskControllerIT {
                 .perform(request, sampleUser.getEmail())
                 .andExpect(status().isUnprocessableEntity());
 
-        assertThat(taskStatusRepository.findAll().size()).isEqualTo(1);
+        assertThat(taskStatusRepository.findAll().size()).isEqualTo(2);
     }
 
     private void regDefaultTask() throws Exception {

@@ -58,6 +58,10 @@ public class TaskStatusesControllerIT {
         return SAMPLE_TASK_STATUS;
     }
 
+    public static TaskStatusDtoRequest getAnotherTaskStatus() {
+        return ANOTHER_TASK_STATUS;
+    }
+
     @BeforeEach
     public void beforeEach() throws Exception {
         utils.setUp();

@@ -1,8 +1,8 @@
 package hexlet.code.controller;
 
+import com.querydsl.core.types.Predicate;
 import hexlet.code.dto.TaskDtoRequest;
 import hexlet.code.model.Task;
-import hexlet.code.model.User;
 import hexlet.code.service.TaskService;
 import hexlet.code.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class TaskController {
 
     @Operation(summary = "Get task by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Task with that ID was found"),
+        @ApiResponse(responseCode = "200", description = "Task with that ID was found"),
     })
     @GetMapping(ID)
     public Task getTaskById(@PathVariable Long id) {
@@ -44,13 +45,14 @@ public class TaskController {
     }
 
     @Operation(summary = "Get a list of all tasks")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", content =
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", content =
             @Content(schema =
             @Schema(implementation = Task.class)))
     })
     @GetMapping("")
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public List<Task> getFilteredTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
+        return taskService.getFilteredTasks(predicate);
     }
 
 

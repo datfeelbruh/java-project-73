@@ -20,5 +20,5 @@ public class TaskDtoRequest implements Dto {
     private String description;
     private Long executorId;
     private Long taskStatusId;
-    private Set<Long> labelsIds;
+    private Set<Long> labels;
 }

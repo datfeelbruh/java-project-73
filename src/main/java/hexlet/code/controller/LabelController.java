@@ -2,7 +2,6 @@ package hexlet.code.controller;
 
 import hexlet.code.dto.LabelDtoRequest;
 import hexlet.code.model.Label;
-import hexlet.code.model.TaskStatus;
 import hexlet.code.service.LabelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,7 +42,7 @@ public class LabelController {
 
     @Operation(summary = "Get label by ID")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200"),
+        @ApiResponse(responseCode = "200"),
     })
     @GetMapping(ID)
     public Label getLabel(@PathVariable Long id) {
@@ -52,7 +51,7 @@ public class LabelController {
 
     @Operation(summary = "Create a new label")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Label created"),
+        @ApiResponse(responseCode = "201", description = "Label created"),
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
