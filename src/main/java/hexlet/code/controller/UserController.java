@@ -1,7 +1,6 @@
 package hexlet.code.controller;
 
 import com.rollbar.notifier.Rollbar;
-import hexlet.code.config.rollbar.RollbarConfig;
 import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.dto.UserDtoResponse;
 import hexlet.code.mapper.UserMapper;
@@ -46,7 +45,6 @@ public class UserController {
     })
     @GetMapping(ID)
     public UserDtoResponse getUser(@PathVariable Long id) {
-        rollbar.debug("Rollbar message");
         return userMapper.toUserDtoRsFromUser(userService.getUserById(id));
     }
 
@@ -68,6 +66,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public UserDtoResponse createUser(@RequestBody UserDtoRequest userDtoRequest) {
+        rollbar.debug("Rollbar message");
         return userMapper.toUserDtoRsFromUser(userService.createUser(userDtoRequest));
     }
 
