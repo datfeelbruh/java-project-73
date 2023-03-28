@@ -22,7 +22,7 @@ import static org.springframework.security.web.authentication.UsernamePasswordAu
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final RequestMatcher publicUrls;
-    private static final String BEARER = "Bearer ";
+    private static final String BEARER = "Bearer";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
 
@@ -46,24 +46,20 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (header == null || !header.startsWith(BEARER)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        final String token = header.split(" ")[1].trim();
-        if (!jwtTokenUtil.validateToken(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (header != null) {
+            String token = header.replaceFirst("^" + BEARER, "").trim();
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        jwtTokenUtil.verify(token).get(SPRING_SECURITY_FORM_USERNAME_KEY).toString(),
-                        null,
-                        DEFAULT_AUTHORITIES
-                );
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            jwtTokenUtil.verify(token).get(SPRING_SECURITY_FORM_USERNAME_KEY).toString(),
+                            null,
+                            DEFAULT_AUTHORITIES
+                    );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        filterChain.doFilter(request, response);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } else {
+            filterChain.doFilter(request, response);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.config.SpringConfigForIT;
 import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.UserDtoRequest;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.http.MediaType;
 import java.util.List;
+import java.util.Map;
 
 import static hexlet.code.config.SpringConfigForIT.TEST_PROFILE;
 import static hexlet.code.controller.UserController.ID;
@@ -156,8 +159,10 @@ public final class UserControllerIT {
         assertNotNull(userRepository.findByEmail(ANOTHER_USER.getEmail()).orElse(null));
     }
 
+
     @Test
     public void updateUserAnUnauthorized() throws Exception {
+
         User userToUpdate = userRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =

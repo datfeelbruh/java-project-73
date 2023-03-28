@@ -1,6 +1,5 @@
 package hexlet.code.controller;
 
-import com.rollbar.notifier.Rollbar;
 import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.dto.UserDtoResponse;
 import hexlet.code.mapper.UserMapper;
@@ -13,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +31,9 @@ import java.util.List;
 public class UserController {
     public static final String USER_CONTROLLER_PATH = "/api/users";
     public static final String ID = "/{id}";
-    @Autowired
-    private Rollbar rollbar;
+    private static final String ONLY_OWNER_BY_ID = """
+            @userRepository.findById(#id).get().getEmail() == authentication.getName()
+        """;
     @Autowired
     private UserService userService;
     @Autowired
@@ -71,6 +72,7 @@ public class UserController {
 
     @Operation(summary = "Update user by ID")
     @PutMapping(ID)
+    @PreAuthorize(ONLY_OWNER_BY_ID)
     public UserDtoResponse updateUser(@RequestBody UserDtoRequest userDtoRequest,
                                       @PathVariable Long id) {
 

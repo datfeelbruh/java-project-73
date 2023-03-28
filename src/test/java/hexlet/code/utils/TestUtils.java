@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.dto.AuthDto;
 import hexlet.code.dto.Dto;
+import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -13,6 +15,7 @@ import hexlet.code.config.security.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -66,10 +69,21 @@ public final class TestUtils {
     }
 
     public ResultActions perform(final MockHttpServletRequestBuilder request, final String byUser) throws Exception {
-        final String token = jwtTokenUtil.createToken(Map.of("username", byUser));
+        final String token = jwtTokenUtil.createToken(Map.of("username", byUser)).trim();
         request.header(AUTHORIZATION, "Bearer " + token);
 
         return mockMvc.perform(request);
+    }
+
+    public static String login(MockMvc mockMvc, AuthDto userData) throws Exception {
+        return mockMvc.perform(
+                        post("/api/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(MAPPER.writeValueAsString(userData))
+                ).andReturn()
+                .getResponse()
+                .getContentAsString()
+                .trim();
     }
 
 
