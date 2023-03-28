@@ -28,7 +28,6 @@ public class User extends BaseModel {
     @NotBlank
     private String email;
     @NotBlank
-    @JsonIgnore
     @Size(min = 3)
     private String password;
 }
