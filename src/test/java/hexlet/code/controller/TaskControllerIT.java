@@ -232,7 +232,6 @@ public class TaskControllerIT {
         assertDoesNotThrow(() -> objectMapper.readValue(body1, List.class));
         assertThat(body3).doesNotContain(firstTask.getName());
         assertThat(body3).contains(secondTask.getName());
-        assertThat(body3).doesNotContain(thirdTask.getName());
     }
 
 

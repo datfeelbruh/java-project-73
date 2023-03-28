@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -41,7 +44,13 @@ public class Task extends BaseModel {
     @JoinColumn(name = "executor_id", foreignKey = @ForeignKey(name = "FK_TASKS_EXECUTOR_ID_COL"))
     private User executor;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "label_id", foreignKey = @ForeignKey(name = "FK_TASKS_LABEL_ID_COL"))
-    private Set<Label> labels;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {
+        CascadeType.PERSIST,
+        CascadeType.MERGE
+    })
+    @JoinTable(name = "task_labels",
+        joinColumns = @JoinColumn(name = "task_id"),
+        inverseJoinColumns = @JoinColumn(name = "labels_id")
+    )
+    private Set<Label> labelsIds;
 }
