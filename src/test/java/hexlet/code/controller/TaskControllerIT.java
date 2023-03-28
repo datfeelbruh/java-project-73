@@ -1,13 +1,16 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.config.SpringConfigForIT;
 import hexlet.code.dto.LabelDtoRequest;
 import hexlet.code.dto.TaskDtoRequest;
 import hexlet.code.dto.TaskStatusDtoRequest;
 import hexlet.code.dto.UserDtoRequest;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
+import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
@@ -33,12 +36,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -64,10 +66,15 @@ public class TaskControllerIT {
     private static final Logger LOGGER = LoggerFactory.getLogger(TaskControllerIT.class);
     private final UserDtoRequest sampleUser = UserControllerIT.getSampleUser();
     private final UserDtoRequest anotherUser = UserControllerIT.getAnotherUser();
-    private final TaskStatusDtoRequest sampleTaskStatus = TaskStatusesControllerIT.getSampleTaskStatus();
-    private final LabelDtoRequest sampleLabel = LabelControllerIT.getSampleLabel();
-    private TaskDtoRequest sampleTask;
-    private TaskDtoRequest anotherTask;
+    private final TaskStatusDtoRequest firstTaskStatusDto = TaskStatusesControllerIT.getSampleTaskStatus();
+    private final TaskStatusDtoRequest secondTaskStatusDto = TaskStatusesControllerIT.getAnotherTaskStatus();
+    private final LabelDtoRequest firstLabelDto = LabelControllerIT.getSampleLabel();
+    private final LabelDtoRequest secondLabelDto = LabelControllerIT.getAnotherLabel();
+    private TaskDtoRequest firstTask;
+    private TaskDtoRequest secondTask;
+    private TaskDtoRequest thirdTask;
+    private TaskStatus secondTaskStatus;
+    private Label secondLabel;
     @Autowired
     private TestUtils utils;
     @Autowired
@@ -87,50 +94,64 @@ public class TaskControllerIT {
         utils.regEntity(anotherUser, USER_CONTROLLER_PATH).andExpect(status().isCreated());
 
         utils.regEntity(
-                sampleTaskStatus,
+                firstTaskStatusDto,
                 sampleUser.getEmail(),
                 TASK_STATUS_CONTROLLER_PATH
         );
 
         utils.regEntity(
-                sampleLabel,
+                firstLabelDto,
                 sampleUser.getEmail(),
                 LABEL_CONTROLLER_PATH
         );
 
         utils.regEntity(
-                TaskStatusesControllerIT.getAnotherTaskStatus(),
+                secondTaskStatusDto,
                 anotherUser.getEmail(),
                 TASK_STATUS_CONTROLLER_PATH
         );
 
         utils.regEntity(
-                LabelControllerIT.getAnotherLabel(),
+                secondLabelDto,
                 anotherUser.getEmail(),
                 LABEL_CONTROLLER_PATH
         );
 
-        sampleTask = TaskDtoRequest.builder()
+        TaskStatus firstTaskStatus = taskStatusRepository.findAll().get(0);
+        secondTaskStatus = taskStatusRepository.findAll().get(1);
+        User firstExecutor = userRepository.findAll().get(0);
+        Label firstLabel = labelRepository.findAll().get(0);
+        secondLabel = labelRepository.findAll().get(1);
+
+        firstTask = TaskDtoRequest.builder()
                 .name("Sample task name")
                 .description("Sample task desc")
-                .taskStatusId(taskStatusRepository.findAll().get(0).getId())
-                .executorId(userRepository.findAll().get(1).getId())
-                .labels(Set.of(labelRepository.findAll().get(0).getId()))
+                .taskStatusId(firstTaskStatus.getId())
+                .executorId(firstExecutor.getId())
+                .labels(Set.of(firstLabel.getId()))
                 .build();
 
-        anotherTask = TaskDtoRequest.builder()
+        secondTask = TaskDtoRequest.builder()
                 .name("Another task name")
                 .description("Another task desc")
-                .taskStatusId(taskStatusRepository.findAll().get(0).getId())
-                .executorId(userRepository.findAll().get(1).getId())
-                .labels(Set.of(labelRepository.findAll().get(0).getId()))
+                .taskStatusId(secondTaskStatus.getId())
+                .executorId(firstExecutor.getId())
+                .labels(Set.of(secondLabel.getId()))
+                .build();
+
+        thirdTask = TaskDtoRequest.builder()
+                .name("Third task name")
+                .description("Another task desc")
+                .taskStatusId(secondTaskStatus.getId())
+                .executorId(firstExecutor.getId())
+                .labels(Set.of(firstLabel.getId()))
                 .build();
     }
 
 
     @Test
     public void createTask() throws Exception {
-        utils.regEntity(sampleTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH)
+        utils.regEntity(firstTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH)
                 .andExpect(status().isCreated());
 
         assertThat(taskRepository.findAll().size()).isEqualTo(1);
@@ -138,7 +159,7 @@ public class TaskControllerIT {
 
     @Test
     public void createTaskAnUnauthorized() throws Exception {
-        utils.regEntity(sampleTask, TASK_CONTROLLER_PATH).andExpect(status().isForbidden());
+        utils.regEntity(firstTask, TASK_CONTROLLER_PATH).andExpect(status().isForbidden());
         assertThat(taskRepository.findAll().size()).isEqualTo(0);
     }
 
@@ -163,35 +184,57 @@ public class TaskControllerIT {
     }
 
     @Test
-    public void getTasksWithFilter() throws Exception {
-
+    public void getListTasks() throws Exception {
         regDefaultTask();
-        utils.regEntity(anotherTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
+        utils.regEntity(secondTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
+        utils.regEntity(thirdTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
 
-        Long executorId = userRepository.findByEmail(anotherUser.getEmail()).get().getId();
-        Long authorId = userRepository.findByEmail(sampleUser.getEmail()).get().getId();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        MultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+        MockHttpServletResponse response1 = utils.perform(
+                get("/api/tasks"), sampleUser.getEmail()
+        ).andReturn().getResponse();
 
-        requestParams.add("executorId", executorId + "");
-        requestParams.add("authorId", authorId + "");
+        String body1 = response1.getContentAsString();
 
+        assertThat(response1.getStatus()).isEqualTo(200);
 
-        MockHttpServletResponse responseContent = utils.perform(
-                        get(TASK_CONTROLLER_PATH)
-                        .params(requestParams),
-                        sampleUser.getEmail()
-                )
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse();
+        assertDoesNotThrow(() -> objectMapper.readValue(body1, List.class));
+        assertThat(body1).contains(firstTask.getName());
+        assertThat(body1).contains(secondTask.getName());
+        assertThat(body1).contains(thirdTask.getName());
 
-        List<Task> actual = fromJson(responseContent.getContentAsString(), new TypeReference<>() {
-        });
+        long taskStatusId = secondTaskStatus.getId();
 
+        MockHttpServletResponse response2 = utils.perform(
+                get("/api/tasks?taskStatus=" + taskStatusId),
+                sampleUser.getEmail()
+        ).andReturn().getResponse();
 
-        assertThat(actual.size()).isEqualTo(2);
+        String body2 = response2.getContentAsString();
+
+        assertThat(response2 .getStatus()).isEqualTo(200);
+        assertDoesNotThrow(() -> objectMapper.readValue(body2, List.class));
+        assertThat(body2).doesNotContain(firstTask.getName());
+        assertThat(body2).contains(secondTask.getName());
+        assertThat(body2).contains(thirdTask.getName());
+
+        long labelId = secondLabel.getId();
+
+        MockHttpServletResponse response3 = utils.perform(
+                get("/api/tasks?taskStatus=" + taskStatusId
+                        + "&labels=" + labelId), sampleUser.getEmail()
+        ).andReturn().getResponse();
+
+        String body3 = response3.getContentAsString();
+
+        assertThat(response3.getStatus()).isEqualTo(200);
+        assertDoesNotThrow(() -> objectMapper.readValue(body1, List.class));
+        assertThat(body3).doesNotContain(firstTask.getName());
+        assertThat(body3).contains(secondTask.getName());
+        assertThat(body3).doesNotContain(thirdTask.getName());
     }
+
 
     @Test
     public void getTaskAnUnauthorized() throws Exception {
@@ -334,7 +377,7 @@ public class TaskControllerIT {
     }
 
     private void regDefaultTask() throws Exception {
-        utils.regEntity(sampleTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
+        utils.regEntity(firstTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
     }
 
 }
