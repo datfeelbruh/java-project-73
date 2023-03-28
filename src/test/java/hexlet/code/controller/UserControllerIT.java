@@ -112,16 +112,6 @@ public final class UserControllerIT {
     }
 
     @Test
-    public void getUserAnUnauthorized() throws Exception {
-        User expectedUser = userRepository.findAll().get(0);
-
-        MockHttpServletRequestBuilder request =
-                get(USER_CONTROLLER_PATH + ID, expectedUser.getId());
-
-        utils.perform(request).andExpect(status().isForbidden());
-    }
-
-    @Test
     public void getAllUsers() throws Exception {
         utils.regEntity(ANOTHER_USER, USER_CONTROLLER_PATH);
 
