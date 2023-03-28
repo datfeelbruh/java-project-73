@@ -7,7 +7,7 @@ spring:
       platform: postgres
       username: ${USERNAME}
       password: ${PASSWORD}
-      url: jdbc:postgresql://${HOST}:${PORT}/${DB_NAME}
+      url: ${JDBC_DATABASE_URL}
       driverClassName: org.postgresql.Driver
 
     jpa:
