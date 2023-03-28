@@ -1,5 +1,7 @@
 package hexlet.code.controller;
 
+import com.rollbar.notifier.Rollbar;
+import hexlet.code.config.rollbar.RollbarConfig;
 import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.dto.UserDtoResponse;
 import hexlet.code.mapper.UserMapper;
@@ -30,9 +32,8 @@ import java.util.List;
 public class UserController {
     public static final String USER_CONTROLLER_PATH = "/api/users";
     public static final String ID = "/{id}";
-    private static final String ONLY_OWNER_BY_ID = """
-            @userRepository.findById(#id).get().getEmail() == authentication.getName()
-        """;
+    @Autowired
+    private Rollbar rollbar;
     @Autowired
     private UserService userService;
     @Autowired
@@ -45,6 +46,7 @@ public class UserController {
     })
     @GetMapping(ID)
     public UserDtoResponse getUser(@PathVariable Long id) {
+        rollbar.debug("Rollbar message");
         return userMapper.toUserDtoRsFromUser(userService.getUserById(id));
     }
 
