@@ -66,7 +66,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public UserDtoResponse createUser(@RequestBody UserDtoRequest userDtoRequest) {
-        rollbar.debug("Rollbar message");
         return userMapper.toUserDtoRsFromUser(userService.createUser(userDtoRequest));
     }
 
