@@ -62,8 +62,8 @@ public class UserController {
                 .toList();
     }
 
-    @Operation(summary = "Create a new task")
-    @ApiResponse(responseCode = "201", description = "Task created")
+    @Operation(summary = "Create a new user")
+    @ApiResponse(responseCode = "201", description = "User created")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public UserDtoResponse createUser(@RequestBody UserDtoRequest userDtoRequest) {
@@ -72,7 +72,6 @@ public class UserController {
 
     @Operation(summary = "Update user by ID")
     @PutMapping(ID)
-    @PreAuthorize(ONLY_OWNER_BY_ID)
     public UserDtoResponse updateUser(@RequestBody UserDtoRequest userDtoRequest,
                                       @PathVariable Long id) {
 
@@ -81,7 +80,6 @@ public class UserController {
 
     @Operation(summary = "Delete user by ID")
     @DeleteMapping(ID)
-    @PreAuthorize(ONLY_OWNER_BY_ID)
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }

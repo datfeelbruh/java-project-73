@@ -55,18 +55,21 @@ public class TaskController {
         return taskService.getFilteredTasks(predicate);
     }
 
-
+    @Operation(summary = "Create a new task")
+    @ApiResponse(responseCode = "201", description = "Task created")
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public Task createTask(@RequestBody TaskDtoRequest taskDtoRequest) {
         return taskService.createTask(taskDtoRequest);
     }
 
+    @Operation(summary = "Update task by ID")
     @PutMapping(ID)
     public Task updateTask(@RequestBody TaskDtoRequest taskDtoRequest, @PathVariable Long id) {
         return taskService.updateTask(taskDtoRequest, id);
     }
 
+    @Operation(summary = "Delete a task")
     @DeleteMapping(ID)
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);

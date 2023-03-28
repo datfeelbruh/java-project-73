@@ -1,6 +1,7 @@
 package hexlet.code.service;
 
 import hexlet.code.dto.UserDtoRequest;
+import hexlet.code.exception.CustomAuthorizationException;
 import hexlet.code.exception.CustomConstraintException;
 import hexlet.code.exception.ResourceNotFoundException;
 
@@ -57,6 +58,10 @@ public final class UserService implements UserDetailsService {
     public User updateUser(UserDtoRequest userDtoRequest, Long id) {
         User userToUpdate = findById(id);
 
+        if (userToUpdate.getId() != getCurrentUser().getId()) {
+            throw new CustomAuthorizationException("Unable to delete user by another user");
+        }
+
         userToUpdate.setEmail(userDtoRequest.getEmail());
         userToUpdate.setFirstName(userDtoRequest.getFirstName());
         userToUpdate.setLastName(userDtoRequest.getLastName());
@@ -70,6 +75,8 @@ public final class UserService implements UserDetailsService {
 
         if (checkUserAndTaskAssociations(user.getId())) {
             throw new CustomConstraintException("Unable to delete user associated with any task");
+        } else if (user.getId() != getCurrentUser().getId()) {
+            throw new CustomAuthorizationException("Unable to delete user by another user");
         }
 
         userRepository.delete(user);
