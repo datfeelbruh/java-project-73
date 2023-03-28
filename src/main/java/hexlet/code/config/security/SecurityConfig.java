@@ -52,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 loginRequest,
                 new AntPathRequestMatcher(baseUrl + "/users", POST.toString()),
                 new AntPathRequestMatcher(baseUrl + "/users", GET.toString()),
+                new AntPathRequestMatcher(baseUrl + "/users/*", GET.toString()),
                 new NegatedRequestMatcher(new AntPathRequestMatcher(baseUrl + "/**"))
         );
         this.jwtTokenUtil = jwtTokenUtil;
