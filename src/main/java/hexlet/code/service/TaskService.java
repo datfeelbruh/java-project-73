@@ -39,7 +39,7 @@ public class TaskService {
         return findById(id);
     }
 
-    public List<Task> getFilteredTasks(Predicate predicate) {
+    public Iterable<Task> getFilteredTasks(Predicate predicate) {
         return taskRepository.findAll(predicate);
     }
 

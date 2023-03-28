@@ -51,7 +51,7 @@ public class TaskController {
             @Schema(implementation = Task.class)))
     })
     @GetMapping("")
-    public List<Task> getFilteredTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
+    public Iterable<Task> getFilteredTasks(@QuerydslPredicate(root = Task.class) Predicate predicate) {
         return taskService.getFilteredTasks(predicate);
     }
 
