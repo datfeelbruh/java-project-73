@@ -30,7 +30,6 @@ public class Task extends BaseModel {
     @NotBlank
     @Size(min = 3, max = 1000)
     private String name;
-    @Lob
     private String description;
     @NotNull
     @ManyToOne
