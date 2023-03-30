@@ -128,7 +128,7 @@ public class TaskControllerIT {
                 .description("Sample task desc")
                 .taskStatusId(firstTaskStatus.getId())
                 .executorId(firstExecutor.getId())
-                .labels(Set.of(firstLabel.getId()))
+                .labelIds(Set.of(firstLabel.getId()))
                 .build();
 
         secondTask = TaskDtoRequest.builder()
@@ -136,7 +136,7 @@ public class TaskControllerIT {
                 .description("Another task desc")
                 .taskStatusId(secondTaskStatus.getId())
                 .executorId(firstExecutor.getId())
-                .labels(Set.of(secondLabel.getId()))
+                .labelIds(Set.of(secondLabel.getId()))
                 .build();
 
         thirdTask = TaskDtoRequest.builder()
@@ -144,7 +144,7 @@ public class TaskControllerIT {
                 .description("Another task desc")
                 .taskStatusId(secondTaskStatus.getId())
                 .executorId(firstExecutor.getId())
-                .labels(Set.of(firstLabel.getId()))
+                .labelIds(Set.of(firstLabel.getId()))
                 .build();
     }
 

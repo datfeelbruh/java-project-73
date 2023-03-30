@@ -51,8 +51,8 @@ public class TaskService {
         task.setTaskStatus(taskStatusService.getTaskStatusById(taskDtoRequest.getTaskStatusId()));
         task.setAuthor(userService.getCurrentUser());
         task.setExecutor(userService.getUserById(taskDtoRequest.getExecutorId()));
-        if (taskDtoRequest.getLabels() != null) {
-            task.setLabels(getLabelsByIds(taskDtoRequest.getLabels()));
+        if (taskDtoRequest.getLabelIds() != null) {
+            task.setLabels(getLabelsByIds(taskDtoRequest.getLabelIds()));
         }
         return taskRepository.save(task);
     }
@@ -66,8 +66,8 @@ public class TaskService {
         taskToUpdate.setDescription(taskDtoRequest.getDescription());
         taskToUpdate.setExecutor(userService.getUserById(taskDtoRequest.getExecutorId()));
         taskToUpdate.setTaskStatus(taskStatusService.getTaskStatusById(taskDtoRequest.getTaskStatusId()));
-        if (taskDtoRequest.getLabels() != null) {
-            taskToUpdate.setLabels(getLabelsByIds(taskDtoRequest.getLabels()));
+        if (taskDtoRequest.getLabelIds() != null) {
+            taskToUpdate.setLabels(getLabelsByIds(taskDtoRequest.getLabelIds()));
         }
         return taskRepository.save(taskToUpdate);
     }
