@@ -52,5 +52,5 @@ public class Task extends BaseModel {
         joinColumns = @JoinColumn(name = "task_id"),
         inverseJoinColumns = @JoinColumn(name = "labels_id")
     )
-    private Set<Label> labelsIds;
+    private Set<Label> labels;
 }
