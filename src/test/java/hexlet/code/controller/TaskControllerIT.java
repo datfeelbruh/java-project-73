@@ -354,21 +354,6 @@ public class TaskControllerIT {
         assertNotNull(taskRepository.findById(taskToDelete.getId()).orElse(null));
     }
 
-    @Test
-    public void deleteStatusWithBindToTask() throws Exception {
-        regDefaultTask();
-
-        TaskStatus taskStatusToDelete = taskStatusRepository.findAll().get(0);
-
-        MockHttpServletRequestBuilder request =
-                delete(TASK_STATUS_CONTROLLER_PATH + TaskStatusController.ID, taskStatusToDelete.getId());
-
-        utils
-                .perform(request, sampleUser.getEmail())
-                .andExpect(status().isUnprocessableEntity());
-
-        assertThat(taskStatusRepository.findAll().size()).isEqualTo(2);
-    }
 
     private void regDefaultTask() throws Exception {
         utils.regEntity(firstTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);

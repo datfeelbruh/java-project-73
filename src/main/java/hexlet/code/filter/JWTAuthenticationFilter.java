@@ -1,4 +1,4 @@
-package hexlet.code.config.security.filter;
+package hexlet.code.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.config.security.JwtTokenUtil;

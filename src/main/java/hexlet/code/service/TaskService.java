@@ -3,17 +3,16 @@ package hexlet.code.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.core.types.Predicate;
 import hexlet.code.dto.TaskDtoRequest;
-import hexlet.code.exception.CustomAuthorizationException;
-import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.repository.TaskRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,10 +25,11 @@ public class TaskService {
     @Autowired
     private UserService userService;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private TaskStatusService taskStatusService;
     @Autowired
     private LabelService labelService;
-    private static final Logger TASK_SERVICE_LOGGER = LoggerFactory.getLogger(TaskService.class);
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
@@ -60,7 +60,7 @@ public class TaskService {
     public Task updateTask(TaskDtoRequest taskDtoRequest, Long id) {
         Task taskToUpdate = findById(id);
         if (taskToUpdate.getAuthor().getId() != userService.getCurrentUser().getId()) {
-            throw new CustomAuthorizationException("You cannot edit other users tasks");
+            throw new AccessDeniedException("You cannot edit other users tasks");
         }
         taskToUpdate.setName(taskDtoRequest.getName());
         taskToUpdate.setDescription(taskDtoRequest.getDescription());
@@ -75,7 +75,7 @@ public class TaskService {
     public void deleteTask(Long id) {
         Task taskToDelete = findById(id);
         if (taskToDelete.getAuthor().getId() != userService.getCurrentUser().getId()) {
-            throw new CustomAuthorizationException("You cannot delete other users tasks");
+            throw new AccessDeniedException("You cannot delete other users tasks");
         }
         taskRepository.delete(taskToDelete);
     }
@@ -83,7 +83,7 @@ public class TaskService {
     private Task findById(Long id) {
         return taskRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("Task with " + id + " not found")
+                        () -> new NoSuchElementException("Task with " + id + " not found")
                 );
     }
 

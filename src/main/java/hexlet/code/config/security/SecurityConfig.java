@@ -1,7 +1,7 @@
 package hexlet.code.config.security;
 
-import hexlet.code.config.security.filter.JWTAuthenticationFilter;
-import hexlet.code.config.security.filter.JWTAuthorizationFilter;
+import hexlet.code.filter.JWTAuthenticationFilter;
+import hexlet.code.filter.JWTAuthorizationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

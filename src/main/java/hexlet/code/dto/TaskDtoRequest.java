@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Getter
@@ -16,6 +18,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskDtoRequest implements Dto {
+    @NotBlank
+    @Size(min = 3, max = 1000)
     private String name;
     private String description;
     private Long executorId;

@@ -1,8 +1,6 @@
 package hexlet.code.controller;
 
 import hexlet.code.dto.UserDtoRequest;
-import hexlet.code.dto.UserDtoResponse;
-import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,17 +30,14 @@ public class UserController {
     public static final String ID = "/{id}";
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserMapper userMapper;
-
 
     @Operation(summary = "Get user by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User with that ID was found"),
     })
     @GetMapping(ID)
-    public UserDtoResponse getUser(@PathVariable Long id) {
-        return userMapper.toUserDtoRsFromUser(userService.getUserById(id));
+    public User getUser(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @Operation(summary = "Get a list of all users")
@@ -51,27 +46,24 @@ public class UserController {
             @Schema(implementation = User.class)))
     })
     @GetMapping("")
-    public List<UserDtoResponse> getUsers() {
-        return userService.getAllUsers()
-                .stream()
-                .map(e -> userMapper.toUserDtoRsFromUser(e))
-                .toList();
+    public List<User> getUsers() {
+        return userService.getAllUsers();
     }
 
     @Operation(summary = "Create a new user")
     @ApiResponse(responseCode = "201", description = "User created")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public UserDtoResponse createUser(@RequestBody UserDtoRequest userDtoRequest) {
-        return userMapper.toUserDtoRsFromUser(userService.createUser(userDtoRequest));
+    public User createUser(@RequestBody UserDtoRequest userDtoRequest) {
+        return userService.createUser(userDtoRequest);
     }
 
     @Operation(summary = "Update user by ID")
     @PutMapping(ID)
-    public UserDtoResponse updateUser(@RequestBody UserDtoRequest userDtoRequest,
+    public User updateUser(@RequestBody UserDtoRequest userDtoRequest,
                                       @PathVariable Long id) {
 
-        return userMapper.toUserDtoRsFromUser(userService.updateUser(userDtoRequest, id));
+        return userService.updateUser(userDtoRequest, id);
     }
 
     @Operation(summary = "Delete user by ID")

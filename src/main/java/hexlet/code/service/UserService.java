@@ -1,15 +1,11 @@
 package hexlet.code.service;
 
 import hexlet.code.dto.UserDtoRequest;
-import hexlet.code.exception.CustomAuthorizationException;
-import hexlet.code.exception.CustomConstraintException;
-import hexlet.code.exception.ResourceNotFoundException;
 
-import hexlet.code.model.Task;
 import hexlet.code.model.User;
-import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,13 +17,12 @@ import static hexlet.code.config.security.SecurityConfig.DEFAULT_AUTHORITIES;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public final class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private TaskRepository taskRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -54,7 +49,7 @@ public final class UserService implements UserDetailsService {
         User userToUpdate = findById(id);
 
         if (userToUpdate.getId() != getCurrentUser().getId()) {
-            throw new CustomAuthorizationException("Unable to delete user by another user");
+            throw new AccessDeniedException("Unable to delete user by another user");
         }
 
         userToUpdate.setEmail(userDtoRequest.getEmail());
@@ -68,10 +63,8 @@ public final class UserService implements UserDetailsService {
     public void deleteUser(Long id) {
         User user = findById(id);
 
-        if (checkUserAndTaskAssociations(user.getId())) {
-            throw new CustomConstraintException("Unable to delete user associated with any task");
-        } else if (user.getId() != getCurrentUser().getId()) {
-            throw new CustomAuthorizationException("Unable to delete user by another user");
+        if (user.getId() != getCurrentUser().getId()) {
+            throw new AccessDeniedException("Unable to delete user by another user");
         }
 
         userRepository.delete(user);
@@ -80,7 +73,7 @@ public final class UserService implements UserDetailsService {
     private User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("User with id " + id + " not found"));
+                        () -> new NoSuchElementException("User with id " + id + " not found"));
     }
 
     public User getCurrentUser() {
@@ -104,23 +97,7 @@ public final class UserService implements UserDetailsService {
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("User with login " + email + " not found")
+                        () -> new NoSuchElementException("User with login " + email + " not found")
                 );
-    }
-
-    private boolean checkUserAndTaskAssociations(Long userId) {
-        long countAuthorSameId = taskRepository.findAll()
-                .stream()
-                .map(Task::getAuthor)
-                .filter(e -> e.getId() == userId)
-                .count();
-
-        long countExecutorSameId = taskRepository.findAll()
-                .stream()
-                .map(Task::getExecutor)
-                .filter(e -> e.getId() == userId)
-                .count();
-
-        return (countExecutorSameId + countAuthorSameId) != 0;
     }
 }

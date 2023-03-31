@@ -1,4 +1,4 @@
-package hexlet.code.config.security.filter;
+package hexlet.code.filter;
 
 import hexlet.code.config.security.JwtTokenUtil;
 import org.slf4j.Logger;
