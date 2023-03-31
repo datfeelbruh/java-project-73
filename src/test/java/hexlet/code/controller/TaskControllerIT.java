@@ -25,8 +25,6 @@ import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,7 +61,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForIT.class)
 @Transactional
 public class TaskControllerIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskControllerIT.class);
     private final UserDtoRequest sampleUser = UserControllerIT.getSampleUser();
     private final UserDtoRequest anotherUser = UserControllerIT.getAnotherUser();
     private final TaskStatusDtoRequest firstTaskStatusDto = TaskStatusesControllerIT.getSampleTaskStatus();
@@ -167,7 +164,6 @@ public class TaskControllerIT {
     public void getTasksWithoutFilter() throws Exception {
         regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
-        LOGGER.info("{}", expectedTask);
 
         MockHttpServletRequestBuilder request =
                 get(TASK_CONTROLLER_PATH + ID, expectedTask.getId());
@@ -239,7 +235,6 @@ public class TaskControllerIT {
     public void getTaskAnUnauthorized() throws Exception {
         regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
-        LOGGER.info("{}", expectedTask);
 
         MockHttpServletRequestBuilder request =
                 get(TASK_CONTROLLER_PATH + ID, expectedTask.getId());

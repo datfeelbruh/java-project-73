@@ -9,8 +9,6 @@ import hexlet.code.model.Task;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,15 +24,12 @@ import java.util.List;
 
 @Service
 public final class UserService implements UserDetailsService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private static final Logger USER_SERVICE_LOGGER = LoggerFactory.getLogger(UserService.class);
 
     public User getUserById(Long id) {
         return findById(id);

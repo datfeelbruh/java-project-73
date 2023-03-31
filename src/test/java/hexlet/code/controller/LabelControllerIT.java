@@ -16,8 +16,6 @@ import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,7 +45,6 @@ import static hexlet.code.controller.LabelController.ID;
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForIT.class)
 @Transactional
 public class LabelControllerIT {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LabelControllerIT.class);
     @Autowired
     private TestUtils utils;
     @Autowired

@@ -10,8 +10,6 @@ import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.config.security.JwtTokenUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,8 +45,6 @@ public final class TestUtils {
 
     @Autowired
     private LabelRepository labelRepository;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestUtils.class);
 
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .findAndRegisterModules()

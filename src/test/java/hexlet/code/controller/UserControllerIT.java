@@ -11,8 +11,6 @@ import hexlet.code.config.security.JwtTokenUtil;
 import hexlet.code.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +60,6 @@ public final class UserControllerIT {
     private TestUtils utils;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserControllerIT.class);
     private static final UserDtoRequest SAMPLE_USER = TestUtils.fromJson(
             TestUtils.readFixtureJson("sampleUser.json"),
             new TypeReference<UserDtoRequest>() {
