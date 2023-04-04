@@ -24,7 +24,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 @ControllerAdvice
 public final class GlobalExceptionHandler {
     @Autowired
-    RollbarConfig rollbar;
+    private RollbarConfig rollbar;
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public void generalExceptionHandler(Exception exception) {
