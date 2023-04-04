@@ -8,6 +8,13 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * Data transfer class for entity type {@link hexlet.code.model.User}.
+ *
+ * @author sobadxx
+ * @see hexlet.code.controller.UserController
+ * @see hexlet.code.service.UserService
+ */
 @Builder
 @Getter
 @Setter

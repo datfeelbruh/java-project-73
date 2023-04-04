@@ -10,6 +10,10 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * A class Label extends {@link BaseModel} to describe the fields an entity of type Label.
+ * @author sobadxx
+ */
 @Entity
 @Getter
 @Setter

@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Rest controller to process a request for an endpoint /statuses.
+ * @author sobadxx
+ */
 @RestController
 @RequestMapping(value = "${base-url}" + "/statuses")
 public class TaskStatusController {
@@ -30,6 +34,11 @@ public class TaskStatusController {
     @Autowired
     private TaskStatusService taskStatusService;
 
+    /**
+     * GET request handler on endpoint "api/statuses".
+     *
+     * @return All entities {@link TaskStatus} from {@link TaskStatusService#getListOfAllStatuses()}
+     */
     @Operation(summary = "Get a list of all task statuses")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", content =
             @Content(schema =
@@ -40,6 +49,12 @@ public class TaskStatusController {
         return taskStatusService.getListOfAllStatuses();
     }
 
+    /**
+     * GET request handler on endpoint "api/statuses/{id}".
+     *
+     * @param id path variable from request
+     * @return {@link TaskStatus} from {@link TaskStatusService#getTaskStatusById(Long)}
+     */
     @Operation(summary = "Get task status by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
@@ -49,6 +64,12 @@ public class TaskStatusController {
         return taskStatusService.getTaskStatusById(id);
     }
 
+    /**
+     * POST request handler on endpoint "api/statuses".
+     *
+     * @param taskStatusDtoRequest JSON request body
+     * @return Created {@link TaskStatus} from {@link TaskStatusService#createTaskStatus(TaskStatusDtoRequest)}
+     */
     @Operation(summary = "Create a new task status")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Task status created"),
@@ -59,6 +80,13 @@ public class TaskStatusController {
         return taskStatusService.createTaskStatus(taskStatusDtoRequest);
     }
 
+    /**
+     * PUT request handler on endpoint "api/statuses/{id}".
+     *
+     * @param taskStatusDtoRequest JSON request body
+     * @param id path variable from request
+     * @return Created {@link TaskStatus} from {@link TaskStatusService#updateTaskStatus(TaskStatusDtoRequest, Long)}
+     */
     @Operation(summary = "Update task status by ID")
     @PutMapping(ID)
     public TaskStatus updateTaskStatusById(
@@ -68,6 +96,12 @@ public class TaskStatusController {
         return taskStatusService.updateTaskStatus(taskStatusDtoRequest, id);
     }
 
+    /**
+     * DELETE request handler on endpoint "api/statuses/{id}".
+     *
+     * @param id path variable from request
+     * @see TaskStatusService#deleteTaskStatus(Long)
+     */
     @Operation(summary = "Delete task status by ID")
     @DeleteMapping(ID)
     public void deleteTaskStatusById(@PathVariable Long id) {

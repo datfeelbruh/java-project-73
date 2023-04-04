@@ -13,6 +13,10 @@ import java.util.Date;
 import static javax.persistence.GenerationType.IDENTITY;
 import static javax.persistence.TemporalType.TIMESTAMP;
 
+/**
+ * A class BaseModel has the fields necessary for each entity, all entity classes inherit this superclass.
+ * @author sobadxx
+ */
 @Data
 @MappedSuperclass
 public class BaseModel {

@@ -12,6 +12,12 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+/**
+ * Data transfer class for Spring Security authentication.
+ *
+ * @author sobadxx
+ * @see hexlet.code.filter.JWTAuthenticationFilter
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

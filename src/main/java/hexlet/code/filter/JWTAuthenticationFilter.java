@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * A class that implements {@link UsernamePasswordAuthenticationFilter} methods and is required for user authentication.
+ * @author sobadxx
+ */
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
     private final JwtTokenUtil jwtTokenUtil;

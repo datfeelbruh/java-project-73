@@ -11,6 +11,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+
+/**
+ * A class TaskStatus extends {@link BaseModel} to describe the fields an entity of type TaskStatus.
+ * @author sobadxx
+ */
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

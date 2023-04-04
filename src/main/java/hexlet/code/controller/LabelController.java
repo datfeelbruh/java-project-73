@@ -19,9 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
+/**
+ * Rest controller to process a request for an endpoint /labels.
+ *
+ * @author sobadxx
+ */
 @RestController
 @RequestMapping(value = "${base-url}" + "/labels")
 public class LabelController {
@@ -30,6 +34,11 @@ public class LabelController {
     @Autowired
     private LabelService labelService;
 
+    /**
+     * GET request handler on endpoint "api/labels".
+     *
+     * @return All entities {@link Label} from {@link LabelService#getLabelsList()}.
+     */
     @Operation(summary = "Get a list of all labels")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", content =
             @Content(schema =
@@ -40,6 +49,12 @@ public class LabelController {
         return labelService.getLabelsList();
     }
 
+    /**
+     * GET request handler on endpoint "api/labels/{id}".
+     *
+     * @param id path variable from request
+     * @return {@link Label} from {@link LabelService#getLabel(Long)}
+     */
     @Operation(summary = "Get label by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200"),
@@ -49,6 +64,12 @@ public class LabelController {
         return labelService.getLabel(id);
     }
 
+    /**
+     * POST request handler on endpoint "api/labels".
+     *
+     * @param labelDtoRequest JSON request body
+     * @return Created {@link Label} from {@link LabelService#createLabel(LabelDtoRequest)}
+     */
     @Operation(summary = "Create a new label")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Label created"),
@@ -59,12 +80,25 @@ public class LabelController {
         return labelService.createLabel(labelDtoRequest);
     }
 
+    /**
+     * PUT request handler on endpoint "api/labels/{id}".
+     *
+     * @param labelDtoRequest JSON request body
+     * @param id path variable from request
+     * @return Created {@link Label} from {@link LabelService#updateLabel(LabelDtoRequest, Long)}
+     */
     @Operation(summary = "Update label by ID")
     @PutMapping(ID)
     public Label updateLabel(@RequestBody LabelDtoRequest labelDtoRequest, @PathVariable Long id) {
         return labelService.updateLabel(labelDtoRequest, id);
     }
 
+    /**
+     * DELETE request handler on endpoint "api/labels/{id}".
+     *
+     * @param id path variable from request
+     * @see LabelService#deleteLabel(Long)
+     */
     @Operation(summary = "Delete label by ID")
     @DeleteMapping(ID)
     public void deleteLabel(@PathVariable Long id) {

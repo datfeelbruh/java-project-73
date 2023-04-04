@@ -18,7 +18,10 @@ import java.io.IOException;
 
 import static org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.SPRING_SECURITY_FORM_USERNAME_KEY;
 
-
+/**
+ * A class that implements {@link OncePerRequestFilter} methods and is required for user authorization.
+ * @author sobadxx
+ */
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private final JwtTokenUtil jwtTokenUtil;
     private final RequestMatcher publicUrls;

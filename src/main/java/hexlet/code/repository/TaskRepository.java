@@ -6,7 +6,11 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 
-
+/**
+ * A class TaskStatusRepository extends and inherits methods {@link JpaRepository}, {@link QuerydslPredicateExecutor}.
+ * for working with an entity Task
+ * @author sobadxx
+ */
 @Repository
 public interface TaskRepository extends
         JpaRepository<Task, Long>,

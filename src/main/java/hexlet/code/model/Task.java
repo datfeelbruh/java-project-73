@@ -19,6 +19,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
+/**
+ * A class Task extends {@link BaseModel} to describe the fields an entity of type Task.
+ * This class is related to other entities {@link TaskStatus}, {@link User}, {@link Label}
+ * @author sobadxx
+ */
 @Entity
 @Getter
 @Setter

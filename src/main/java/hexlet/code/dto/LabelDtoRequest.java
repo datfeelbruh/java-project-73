@@ -7,7 +7,13 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
+/**
+ * Data transfer class for entity type {@link hexlet.code.model.Label}.
+ *
+ * @author sobadxx
+ * @see hexlet.code.controller.LabelController
+ * @see hexlet.code.service.LabelService
+ */
 @Getter
 @Setter
 @AllArgsConstructor

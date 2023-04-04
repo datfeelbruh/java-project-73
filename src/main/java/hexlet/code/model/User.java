@@ -6,13 +6,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+
+/**
+ * A class User extends {@link BaseModel} to describe the fields an entity of type User.
+ * @author sobadxx
+ */
 @Getter
 @Setter
 @Entity

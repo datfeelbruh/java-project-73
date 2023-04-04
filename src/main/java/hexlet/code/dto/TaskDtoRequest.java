@@ -10,7 +10,13 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
-
+/**
+ * Data transfer class for entity type {@link hexlet.code.model.Task}.
+ *
+ * @author sobadxx
+ * @see hexlet.code.controller.TaskController
+ * @see hexlet.code.service.TaskService
+ */
 @Getter
 @Setter
 @Builder

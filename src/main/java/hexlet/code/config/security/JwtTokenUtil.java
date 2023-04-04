@@ -2,12 +2,8 @@ package hexlet.code.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Clock;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.impl.DefaultClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +14,12 @@ import java.util.Map;
 
 import static io.jsonwebtoken.impl.TextCodec.BASE64;
 
+/**
+ * A utility class that provides methods for working with JSON WEB TOKEN(JWT).
+ * @author sobaxx
+ * @see hexlet.code.filter.JWTAuthenticationFilter
+ * @see hexlet.code.filter.JWTAuthorizationFilter
+ */
 @Component
 public class JwtTokenUtil {
     private final String jwtSecret;
@@ -38,6 +40,13 @@ public class JwtTokenUtil {
         this.clock = DefaultClock.INSTANCE;
     }
 
+    /**
+     * Method to create a unique JWT token.
+     *
+     * @param attributes Map with user authentication data
+     * @return unique string token for requests requiring authorization
+     * @see hexlet.code.filter.JWTAuthenticationFilter
+     */
     public String createToken(final Map<String, Object> attributes) {
         JWT_UTIL_LOGGER.error("ATTRIBUTES {}", attributes);
         return Jwts.builder()
@@ -46,6 +55,13 @@ public class JwtTokenUtil {
                 .compact();
     }
 
+    /**
+     * Method to verify a unique JWT token from request.
+     *
+     * @param token Unique JWT token
+     * @return Map with JWT token properties
+     * @see hexlet.code.filter.JWTAuthorizationFilter
+     */
     public Map<String, Object> verify(String token) {
         return Jwts.parser()
                 .requireIssuer(issuer)
@@ -56,25 +72,13 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return true;
-        } catch (SignatureException ex) {
-            JWT_UTIL_LOGGER.error("Invalid JWT signature - {}", ex.getMessage());
-        } catch (MalformedJwtException ex) {
-            JWT_UTIL_LOGGER.error("Invalid JWT token - {}", ex.getMessage());
-        } catch (ExpiredJwtException ex) {
-            JWT_UTIL_LOGGER.error("Expired JWT token - {}", ex.getMessage());
-        } catch (UnsupportedJwtException ex) {
-            JWT_UTIL_LOGGER.error("Unsupported JWT token - {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            JWT_UTIL_LOGGER.error("JWT claims string is empty - {}", ex.getMessage());
-        }
-        return false;
-    }
-
-
+    /**
+     * Method to get {@link Claims} from attributes map.
+     *
+     * @param attributes Map with user authentication data
+     * @param expiresInSec long value, how long after how long the token expires
+     * @return {@link Claims}
+     */
     private Claims getClaims(final Map<String, Object> attributes, final Long expiresInSec) {
 
         final Claims claims = Jwts.claims();

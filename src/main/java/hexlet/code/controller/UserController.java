@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 
+/**
+ * Rest controller to process a request for an endpoint /users.
+ * @author sobadxx
+ */
 @RestController
 @RequestMapping("${base-url}" + "/users")
 public class UserController {
@@ -31,6 +35,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    /**
+     * GET request handler on endpoint "api/users/{id}".
+     *
+     * @param id path variable from request
+     * @return {@link User} from {@link UserService#getUserById(Long)}
+     */
     @Operation(summary = "Get user by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "User with that ID was found"),
@@ -40,6 +50,11 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    /**
+     * GET request handler on endpoint "api/users".
+     *
+     * @return All entities {@link User} from {@link UserService#getAllUsers()}
+     */
     @Operation(summary = "Get a list of all users")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", content =
             @Content(schema =
@@ -50,6 +65,12 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    /**
+     * POST request handler on endpoint "api/users".
+     *
+     * @param userDtoRequest JSON request body
+     * @return Created {@link User} from {@link UserService#createUser(UserDtoRequest)}
+     */
     @Operation(summary = "Create a new user")
     @ApiResponse(responseCode = "201", description = "User created")
     @ResponseStatus(HttpStatus.CREATED)
@@ -58,6 +79,13 @@ public class UserController {
         return userService.createUser(userDtoRequest);
     }
 
+    /**
+     * PUT request handler on endpoint "api/users/{id}".
+     *
+     * @param userDtoRequest JSON request body
+     * @param id path variable from request
+     * @return Created {@link User} from {@link UserService#createUser(UserDtoRequest)}
+     */
     @Operation(summary = "Update user by ID")
     @PutMapping(ID)
     public User updateUser(@RequestBody UserDtoRequest userDtoRequest,
@@ -66,6 +94,12 @@ public class UserController {
         return userService.updateUser(userDtoRequest, id);
     }
 
+    /**
+     * DELETE request handler on endpoint "api/users/{id}".
+     *
+     * @param id path variable from request
+     * @see UserService#deleteUser(Long)
+     */
     @Operation(summary = "Delete user by ID")
     @DeleteMapping(ID)
     public void deleteUser(@PathVariable Long id) {
