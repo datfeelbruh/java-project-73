@@ -1,5 +1,6 @@
 package hexlet.code.service;
 
+import com.rollbar.notifier.Rollbar;
 import hexlet.code.dto.UserDtoRequest;
 import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
@@ -30,6 +31,8 @@ import java.util.NoSuchElementException;
  */
 @Service
 public final class UserService implements UserDetailsService {
+    @Autowired
+    private Rollbar rollbar;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -84,6 +87,7 @@ public final class UserService implements UserDetailsService {
         User userToUpdate = findById(id);
 
         if (userToUpdate.getId() != getCurrentUser().getId()) {
+            rollbar.error(new AccessDeniedException("rollbar"), "rollbar");
             throw new AccessDeniedException("Unable to delete user by another user");
         }
 

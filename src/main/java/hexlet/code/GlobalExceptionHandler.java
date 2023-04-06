@@ -38,7 +38,7 @@ public final class GlobalExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({HttpMessageNotReadableException.class})
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public void validationExceptionsHandler(Exception exception) {
         rollbar.error(exception.getMessage());
     }
