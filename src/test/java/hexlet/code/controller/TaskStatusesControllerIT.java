@@ -62,26 +62,25 @@ public class TaskStatusesControllerIT {
     @BeforeEach
     public void beforeEach() throws Exception {
         utils.setUp();
+        regDefaultStatus();
     }
 
     @Test
     public void createTaskStatus() throws Exception {
-        regDefaultStatus()
+        utils.regEntity(ANOTHER_TASK_STATUS, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH)
                 .andExpect(status().isCreated());
 
-        assertThat(taskStatusRepository.findAll().size()).isEqualTo(1);
+        assertThat(taskStatusRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
     public void createTaskStatusAnUnauthorized() throws Exception {
         utils.regEntity(ANOTHER_TASK_STATUS, TASK_STATUS_CONTROLLER_PATH).andExpect(status().isForbidden());
-        assertThat(taskStatusRepository.findAll().size()).isEqualTo(0);
+        assertThat(taskStatusRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     public void updateTask() throws Exception {
-        regDefaultStatus();
-
         TaskStatus taskStatusToUpdate = taskStatusRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -98,8 +97,6 @@ public class TaskStatusesControllerIT {
 
     @Test
     public void updateTaskAnUnauthorized() throws Exception {
-        regDefaultStatus();
-
         TaskStatus taskStatusToUpdate = taskStatusRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -116,8 +113,6 @@ public class TaskStatusesControllerIT {
 
     @Test
     public void getTaskStatus() throws Exception {
-        regDefaultStatus();
-
         TaskStatus taskStatus = taskStatusRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -138,7 +133,6 @@ public class TaskStatusesControllerIT {
 
     @Test
     public void getAllTaskStatuses() throws Exception {
-        regDefaultStatus();
         utils.regEntity(ANOTHER_TASK_STATUS, sampleUser.getEmail(), TASK_STATUS_CONTROLLER_PATH);
         MockHttpServletResponse response = utils.perform(
                 get(TASK_STATUS_CONTROLLER_PATH), sampleUser.getEmail())
@@ -154,8 +148,6 @@ public class TaskStatusesControllerIT {
 
     @Test
     public void deleteStatus() throws Exception {
-        regDefaultStatus();
-
         TaskStatus taskStatusToDelete = taskStatusRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -170,8 +162,6 @@ public class TaskStatusesControllerIT {
 
     @Test
     public void deleteStatusAnUnauthorized() throws Exception {
-        regDefaultStatus();
-
         TaskStatus taskStatusToDelete = taskStatusRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =

@@ -126,7 +126,6 @@ public final class UserControllerIT {
 
     @Test
     public void createUser() throws Exception {
-
         MockHttpServletResponse response = utils
                 .regEntity(ANOTHER_USER, USER_CONTROLLER_PATH)
                 .andReturn()

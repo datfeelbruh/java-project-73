@@ -66,26 +66,26 @@ public class LabelControllerIT {
     public void beforeEach() throws Exception {
         utils.setUp();
         utils.regEntity(sampleUser, USER_CONTROLLER_PATH);
+        regDefaultLabel();
     }
 
     @Test
     public void createLabel() throws Exception {
-        regDefaultLabel()
-                .andExpect(status().isCreated());
+        utils.regEntity(ANOTHER_LABEL, sampleUser.getEmail(), LABEL_CONTROLLER_PATH)
+                        .andExpect(status().isCreated());
 
-        assertThat(labelRepository.findAll().size()).isEqualTo(1);
+        assertThat(labelRepository.findAll().size()).isEqualTo(2);
     }
     @Test
     public void createLabelUnauthorized() throws Exception {
         utils.regEntity(ANOTHER_LABEL, LABEL_CONTROLLER_PATH)
                 .andExpect(status().isForbidden());
 
-        assertThat(labelRepository.findAll().size()).isEqualTo(0);
+        assertThat(labelRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     public void getAllLabels() throws Exception {
-        regDefaultLabel();
         utils.regEntity(ANOTHER_LABEL, sampleUser.getEmail(), LABEL_CONTROLLER_PATH);
 
         MockHttpServletResponse response = utils.perform(
@@ -103,8 +103,6 @@ public class LabelControllerIT {
 
     @Test
     public void getLabel() throws Exception {
-        regDefaultLabel();
-
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletResponse response = utils.perform(
@@ -123,7 +121,6 @@ public class LabelControllerIT {
 
     @Test
     public void getLabelUnauthorized() throws Exception {
-        regDefaultLabel();
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletResponse response = utils.perform(
@@ -136,7 +133,6 @@ public class LabelControllerIT {
 
     @Test
     public void updateLabel() throws Exception {
-        regDefaultLabel();
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -151,7 +147,6 @@ public class LabelControllerIT {
 
     @Test
     public void updateLabelUnauthorized() throws Exception {
-        regDefaultLabel();
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -166,7 +161,6 @@ public class LabelControllerIT {
 
     @Test
     public void deleteLabel() throws Exception {
-        regDefaultLabel();
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -179,7 +173,6 @@ public class LabelControllerIT {
 
     @Test
     public void deleteLabelUnauthorized() throws Exception {
-        regDefaultLabel();
         Label expectedLabel = labelRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =

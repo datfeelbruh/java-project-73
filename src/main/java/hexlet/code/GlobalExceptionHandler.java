@@ -1,6 +1,6 @@
 package hexlet.code;
 
-import hexlet.code.config.rollbar.RollbarConfig;
+import com.rollbar.notifier.Rollbar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,46 +24,46 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 @ControllerAdvice
 public final class GlobalExceptionHandler {
     @Autowired
-    private RollbarConfig rollbar;
+    private Rollbar rollbar;
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public void generalExceptionHandler(Exception exception) {
-        rollbar.rollbar().error(exception.getMessage());
+        rollbar.error(exception.getMessage());
     }
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
     public void noSuchElementExceptionHandler(NoSuchElementException exception) {
-        rollbar.rollbar().error(exception.getMessage());
+        rollbar.error(exception.getMessage());
     }
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler({HttpMessageNotReadableException.class})
     public void validationExceptionsHandler(Exception exception) {
-        rollbar.rollbar().error(exception.getMessage());
+        rollbar.error(exception.getMessage());
     }
 
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public void validationExceptionsHandler(MethodArgumentNotValidException exception) {
-        rollbar.rollbar().error(exception);
+        rollbar.error(exception);
     }
 
     @ResponseStatus(UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public void validationExceptionsHandler(DataIntegrityViolationException exception) {
-        rollbar.rollbar().error(exception.getCause().getCause().getMessage());
+        rollbar.error(exception.getCause().getCause().getMessage());
     }
 
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public void accessDeniedException(AccessDeniedException exception) {
-        rollbar.rollbar().error(exception.getMessage());
+        rollbar.error(exception.getMessage());
     }
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(UsernameNotFoundException.class)
     public void userNotFoundExceptionHandler(UsernameNotFoundException exception) {
-        rollbar.rollbar().error(exception.getMessage());
+        rollbar.error(exception.getMessage());
     }
 }

@@ -143,26 +143,27 @@ public class TaskControllerIT {
                 .executorId(firstExecutor.getId())
                 .labelIds(Set.of(firstLabel.getId()))
                 .build();
+
+        regDefaultTask();
     }
 
 
     @Test
     public void createTask() throws Exception {
-        utils.regEntity(firstTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH)
+        utils.regEntity(secondTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH)
                 .andExpect(status().isCreated());
 
-        assertThat(taskRepository.findAll().size()).isEqualTo(1);
+        assertThat(taskRepository.findAll().size()).isEqualTo(2);
     }
 
     @Test
     public void createTaskAnUnauthorized() throws Exception {
         utils.regEntity(firstTask, TASK_CONTROLLER_PATH).andExpect(status().isForbidden());
-        assertThat(taskRepository.findAll().size()).isEqualTo(0);
+        assertThat(taskRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     public void getTasksWithoutFilter() throws Exception {
-        regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -181,7 +182,6 @@ public class TaskControllerIT {
 
     @Test
     public void getListTasks() throws Exception {
-        regDefaultTask();
         utils.regEntity(secondTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
         utils.regEntity(thirdTask, sampleUser.getEmail(), TASK_CONTROLLER_PATH);
 
@@ -233,7 +233,6 @@ public class TaskControllerIT {
 
     @Test
     public void getTaskAnUnauthorized() throws Exception {
-        regDefaultTask();
         Task expectedTask = taskRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -245,7 +244,6 @@ public class TaskControllerIT {
 
     @Test
     public void updateTask() throws Exception {
-        regDefaultTask();
         Task taskToUpdate = taskRepository.findAll().get(0);
         TaskDtoRequest anotherTask = new TaskDtoRequest();
         anotherTask.setName("Another task name");
@@ -267,7 +265,6 @@ public class TaskControllerIT {
 
     @Test
     public void updateTaskAnUnauthorized() throws Exception {
-        regDefaultTask();
         Task taskToUpdate = taskRepository.findAll().get(0);
 
         TaskDtoRequest anotherTask = new TaskDtoRequest();
@@ -289,7 +286,6 @@ public class TaskControllerIT {
 
     @Test
     public void updateTaskAnAnotherUser() throws Exception {
-        regDefaultTask();
         Task taskToUpdate = taskRepository.findAll().get(0);
 
         TaskDtoRequest anotherTask = new TaskDtoRequest();
@@ -312,8 +308,6 @@ public class TaskControllerIT {
 
     @Test
     public void deleteTask() throws Exception {
-        regDefaultTask();
-
         Task taskToDelete = taskRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -327,8 +321,6 @@ public class TaskControllerIT {
 
     @Test
     public void deleteTaskAnUnauthorized() throws Exception {
-        regDefaultTask();
-
         Task taskToDelete = taskRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
@@ -342,8 +334,6 @@ public class TaskControllerIT {
 
     @Test
     public void deleteTaskAnAnotherUser() throws Exception {
-        regDefaultTask();
-
         Task taskToDelete = taskRepository.findAll().get(0);
 
         MockHttpServletRequestBuilder request =
